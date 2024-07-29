@@ -1,5 +1,5 @@
 import { createGlobalStyle } from "styled-components";
-import reset from "styled-reset"; //css초기화
+import reset from "styled-reset";
 
 const GlobalStyles = createGlobalStyle`
     ${reset}
@@ -15,7 +15,7 @@ const GlobalStyles = createGlobalStyle`
         margin: 0;
         padding: 0;
         border: 0;
-        font-size: 10px;
+        font-size: 12px;
         vertical-align: baseline;
     }
     body{
