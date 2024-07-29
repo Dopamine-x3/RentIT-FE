@@ -9,7 +9,6 @@ import loginImage from "../../assets/imgs/loginImage.svg";
 import close from "../../assets/imgs/close.svg";
 import logo from "../../assets/imgs/logo.png";
 
-// Define keyframes for animations
 const slideUp = keyframes`
   0% {
     transform: translateY(100%);

@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
 // 컴포넌트
-import Header from "../components/layout/Header";
+import Header from "../components/layout/header";
+import Footer from "../components/layout/footer";
 import Banner from "../components/Banner";
 import RequestBoard from "../components/RequestBoard";
 import OfferBoard from "../components/OfferBoard";
@@ -57,6 +58,8 @@ const Home = () => {
           <RequestBoard />
         </div>
       </Section3>
+
+      <Footer />
     </div>
   );
 };
