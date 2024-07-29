@@ -147,7 +147,7 @@ function Register() {
               <HowToRegist/>
               <RegistBtn> 등록하기 </RegistBtn>
             </form>
-            <link as='image' rel='preload' href='check.png' />
+             {/* <link as='image' rel='preload' href='check.png' /> */}
           </Div>
         </Div>
         {/* {isOpen && <ModalSeller handleClose={handleClose} word1={'이미지는 "한번에" 5장까지 첨부 가능합니다!'} word2={'다시 작성 바랍니다.'} />} */}
