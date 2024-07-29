@@ -18,7 +18,7 @@ import styled from 'styled-components'
 import HowToRegist from '../components/regist/HowToRegist'
 
 
-// const MapComp = lazy(()=> import('../components/regist/Map'))
+const MapComp = lazy(() => import('../components/regist/Map'))
 
 function Register() {
   const autofocus = useRef();
@@ -68,14 +68,14 @@ function Register() {
   //   }
   // })
 
-  // const onSubmitHandler = (event) => {
-  //   event.preventDefault();
-  //   mutate({
-  //     ...values,
-  //     images:image,
-  //     location:location
-  //   })
-  // }
+  const onSubmitHandler = (event) => {
+    event.preventDefault();
+    // mutate({
+    //   ...values,
+    //   images:image,
+    //   location:location
+    // })
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -116,8 +116,8 @@ function Register() {
           <div style={{ height: '685px', border: '1px solid #D7D7D7' }}></div>
           <Div width="100%">
 
-            <form > {/* onSubmit={onSubmitHandler} */}
-            <RegistDropdown/>
+            <form onSubmit={onSubmitHandler} > {/*  */}
+              <RegistDropdown />
               <PriceDiv>
                 <PriceSpan>가격</PriceSpan>
                 <PriceInput
@@ -136,18 +136,18 @@ function Register() {
               // onChange={onChange}
               />
 
+              <HowToRegist />
+              <Suspense fallback={<div>Loading map...</div>}>
+                <MapComp theme={'regist'} />
+              </Suspense>
 
-              {/* <Suspense> */}
-              {/* <MapComp theme = {'regist'}/> */}
-              {/* </Suspense> */}
 
-              
-            
 
-              <HowToRegist/>
+
+
               <RegistBtn> 등록하기 </RegistBtn>
             </form>
-             {/* <link as='image' rel='preload' href='check.png' /> */}
+            {/* <link as='image' rel='preload' href='check.png' /> */}
           </Div>
         </Div>
         {/* {isOpen && <ModalSeller handleClose={handleClose} word1={'이미지는 "한번에" 5장까지 첨부 가능합니다!'} word2={'다시 작성 바랍니다.'} />} */}
