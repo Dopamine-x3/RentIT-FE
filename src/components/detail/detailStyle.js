@@ -253,7 +253,7 @@ export const Registertext = styled.textarea`
 
 export const DescriptionDiv = styled.div`
   width: 567px;
-  height : 196px;
+  height : 366px;
   margin-bottom : 26px;
   overflow : auto;
   border : 1px solid #E1E1E1;

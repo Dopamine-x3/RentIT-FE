@@ -15,10 +15,11 @@ export const FirstPreview = styled.div`
     position: relative;
     width: 567px;
     height: 500px; 
-    border: 1px dotted gray;
+    border: 8px dotted gray;
     border-radius : 10px;
     background: #C4C4C4;
     overflow: hidden;
+    border-style: dashed ;
 `
 export const OtherPreview = styled.div`
     position: relative;
