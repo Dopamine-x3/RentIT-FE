@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 export const RegistTitle = styled.span`
-    font-size: 1.5rem;
+    font-size: 2.0rem;
 `
 export const TitleInput = styled.input`
     width: 567px;
