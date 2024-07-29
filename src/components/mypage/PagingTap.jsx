@@ -2,7 +2,9 @@ import React, { lazy, Suspense } from 'react'
 import { nanoid } from 'nanoid'
 import styled from 'styled-components'
 import { Div } from '../globalStyle';
-import MyProducts from './Myproducts';
+import MyProducts from './MyProducts';
+
+
 const MyRents = lazy(()=>import('./MyRents'))
 // const MyZzims = lazy(()=>import('./MyZzims'))
 
