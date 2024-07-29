@@ -12,10 +12,10 @@ const Container = styled.div`
 `;
 
 const DateText = styled.div`
-  font-size: 18px;
+  font-size: 15px;
   cursor: pointer;
-  color: #007bff;
-  text-decoration: underline;
+  color: #000000;
+  text-decoration: none;
 `;
 
 const CalendarContainer = styled.div`
@@ -37,10 +37,12 @@ const StyledCalendar = styled(Calendar)`
   padding: 0;
   width: auto;
   background-color: #fff;
+  
 
   .react-calendar__tile {
-    border-radius: 50%;
+    
     transition: background-color 0.3s ease;
+    margin-top: 10px;
   }
 
   .react-calendar__tile:hover,
