@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <div>
       Home
-      <Footer />
+      <Footer topRem={6} botRem={2} />
     </div>
   );
 };

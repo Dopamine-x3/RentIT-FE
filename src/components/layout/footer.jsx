@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import { Div, MaxWidthDiv } from '../globalStyle'
+import { Div, MaxWidthDiv } from '../layout/globalStyle'
 
 const footer= ({ topRem, botRem }) =>{
     const navi = useNavigate();
