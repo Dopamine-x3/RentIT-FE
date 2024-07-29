@@ -25,27 +25,27 @@ const OfferBoardList = () => {
 
 const OfferContainer = styled.div`
   display: grid;
-  gap: 2.5rem;
+  gap: 5rem;
 
   /* 작은 화면에서 2열 레이아웃 */
   @media (min-width: 640px) {
     /* sm */
-    grid-template-columns: repeat(2, 1fr);
-    gap: 5rem;
+    grid-template-columns: repeat(2, 1.5fr);
+    gap: 8.5rem;
   }
 
   /* 큰 화면에서 3열 레이아웃 */
   @media (min-width: 1024px) {
     /* lg */
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8.75rem;
+    grid-template-columns: repeat(3, 1.5fr);
+    gap: 8.5rem;
   }
 
   /* 엑스트라 큰 화면에서 4열 레이아웃 */
   @media (min-width: 1280px) {
     /* xl */
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8.75rem;
+    grid-template-columns: repeat(4, 1.5fr);
+    gap: 8.5rem;
   }
 `;
 

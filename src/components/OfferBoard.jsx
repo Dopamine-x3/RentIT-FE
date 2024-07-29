@@ -21,7 +21,9 @@ const OfferBoard = ({ offer }) => {
 
 // OfferBoard 스타일
 const OfferItem = styled.div`
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  border: 1px solid #e0e0e0;
   background: #fff;
   transition: box-shadow 0.25s ease-in-out, transform 0.25s ease-in-out;
   &:hover {

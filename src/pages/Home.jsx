@@ -103,6 +103,7 @@ const SectionHead = styled.div`
   }
 `;
 const SectionBody = styled.div`
+  width: 100%;
   display: flex;
   justify-content: space-between;
 `;

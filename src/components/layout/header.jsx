@@ -197,6 +197,7 @@ const SignupLink = styled.span`
 const LogoImage = styled.img`
   width: auto;
   height: 40px;
+  margin: 0 15px;
 `;
 
 const Header = () => {

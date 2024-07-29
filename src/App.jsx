@@ -6,12 +6,13 @@ import Product from "./pages/Product.jsx";
 import Register from "./pages/Register.jsx";
 import NotFound from "./pages/NoFound.jsx";
 import Join from "./pages/Join.jsx";
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" exact={true} element={<Home />} />
-        <Route path="/chat" element={<Chat />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/chat/:userName/:roomName" element={<Chat />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/product" element={<Product />} />
         <Route path="/register" element={<Register />} />
