@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "http://3.36.161.37/api",
   timeout: 6000,
 });
 
@@ -9,7 +9,6 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     config.headers["authorization"] = localStorage.getItem("accessToken");
-    config.headers["refresh-token"] = localStorage.getItem("refreshToken");
     return config;
   },
   (error) => {

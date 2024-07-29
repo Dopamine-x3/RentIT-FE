@@ -6,6 +6,7 @@ import Product from "./pages/Product.jsx";
 import Register from "./pages/Register.jsx";
 import NotFound from "./pages/NoFound.jsx";
 import Join from "./pages/Join.jsx";
+import Search from "./pages/Search.jsx";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/join" element={<Join />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </BrowserRouter>
   );

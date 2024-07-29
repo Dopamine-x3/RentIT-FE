@@ -1,6 +1,6 @@
 import styled, { keyframes, css } from "styled-components";
-import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import bell from "../../assets/imgs/bell.svg";
 import chat1 from "../../assets/imgs/chat1.svg";
 import search from "../../assets/imgs/search.svg";
@@ -8,6 +8,7 @@ import userIcon from "../../assets/imgs/userIcon.png";
 import loginImage from "../../assets/imgs/loginImage.svg";
 import close from "../../assets/imgs/close.svg";
 import logo from "../../assets/imgs/logo.png";
+import { postLogin } from "../../apis/axios";
 
 const slideUp = keyframes`
   0% {
@@ -31,7 +32,7 @@ const slideDown = keyframes`
   }
 `;
 
-// Styled Components
+// 스타일드 컴포넌트
 const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -86,6 +87,7 @@ const UserIcon = styled.img`
   border-radius: 50%;
   background-color: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 `;
 
 const LoginButton = styled.div`
@@ -200,11 +202,45 @@ const LogoImage = styled.img`
   margin: 0 15px;
 `;
 
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 150px;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  display: ${({ isOpen }) => (isOpen ? "block" : "none")};
+  z-index: 20;
+`;
+
+const DropdownItem = styled.div`
+  padding: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: black;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+`;
+
 const Header = () => {
   const [login, setLogin] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const modalBackground = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setLogin(true);
+    }
+  }, []);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -214,35 +250,70 @@ const Header = () => {
     }, 300);
   };
 
+  const handleLogin = async () => {
+    try {
+      const { accessToken, refreshToken } = await postLogin(email, password);
+      setLogin(true);
+      navigate("/");
+      handleClose();
+    } catch (error) {
+      console.error("로그인 실패:", error);
+      alert("로그인에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    setLogin(false);
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
   return (
     <HeaderContainer>
       <Link to="/">
-        <LogoImage src={logo} alt="logo" />
+        <LogoImage src={logo} alt="로고" />
       </Link>
       {login ? (
         <HeaderMenu>
           <IconButton>
-            <img src={bell} alt="bell icon" />
+            <img src={bell} alt="벨 아이콘" />
           </IconButton>
           <IconButton>
-            <img src={chat1} alt="chat icon" />
+            <img src={chat1} alt="채팅 아이콘" />
           </IconButton>
           <IconButton>
-            <img src={search} alt="search icon" />
+            <img src={search} alt="검색 아이콘" />
           </IconButton>
           <WriteButton to="/write">새 글 작성</WriteButton>
-          <UserIcon src={userIcon} alt="유저 아이콘" />
+          <div style={{ position: "relative" }}>
+            <UserIcon
+              src={userIcon}
+              alt="유저 아이콘"
+              onClick={toggleDropdown}
+            />
+            <DropdownMenu isOpen={dropdownOpen}>
+              <DropdownItem onClick={() => navigate("/mypage")}>
+                마이페이지
+              </DropdownItem>
+              <DropdownItem onClick={handleLogout}>로그아웃</DropdownItem>
+            </DropdownMenu>
+          </div>
         </HeaderMenu>
       ) : (
         <HeaderMenu>
           <IconButton>
-            <img src={bell} alt="bell icon" />
+            <img src={bell} alt="벨 아이콘" />
           </IconButton>
           <IconButton>
-            <img src={chat1} alt="chat icon" />
+            <img src={chat1} alt="채팅 아이콘" />
           </IconButton>
           <IconButton>
-            <img src={search} alt="search icon" />
+            <Link to="/search">
+              <img src={search} alt="검색 아이콘" />
+            </Link>
           </IconButton>
           <LoginButton onClick={() => setModalOpen(true)}>로그인</LoginButton>
           {modalOpen && (
@@ -279,7 +350,7 @@ const Header = () => {
                       marginBottom: "32px",
                     }}
                   >
-                    <CloseButton src={close} alt="x" onClick={handleClose} />
+                    <CloseButton src={close} alt="닫기" onClick={handleClose} />
                   </div>
                   <div>
                     <LoginTitle>로그인</LoginTitle>
@@ -288,6 +359,8 @@ const Header = () => {
                       <TextInput
                         type="text"
                         placeholder="이메일을 입력하세요."
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                     <div>
@@ -295,9 +368,11 @@ const Header = () => {
                       <TextInput
                         type="password"
                         placeholder="비밀번호를 입력하세요."
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
-                    <SubmitButton>로그인</SubmitButton>
+                    <SubmitButton onClick={handleLogin}>로그인</SubmitButton>
                     <div
                       style={{
                         display: "flex",
