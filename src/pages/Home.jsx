@@ -59,7 +59,7 @@ const Home = () => {
         </div>
       </Section3>
 
-      <Footer />
+      <Footer  />
     </div>
   );
 };

@@ -17,7 +17,7 @@ const ModalSeller = ({handleClose, word1, word2}) => {
                 </Cancel>
               <Div fDirection = 'column' alignItem = 'center'>
                 <span style={{display:'flex', alignItems:'center', gap:'5px'}}>
-                  <NotifiyIcon src='/images/edit.png'/>
+                  <NotifiyIcon src='../../assets/imgs/edit.png'/>
                   {word1}
                 </span>
                 <span>
