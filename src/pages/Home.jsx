@@ -4,8 +4,8 @@ import styled from "styled-components";
 import Header from "../components/layout/header";
 import Footer from "../components/layout/footer";
 import Banner from "../components/Banner";
-import RequestBoard from "../components/RequestBoard";
-import OfferBoard from "../components/OfferBoard";
+import RequestBoardList from "../components/RequestBoardList";
+import OfferBoardList from "../components/OfferBoardList";
 
 // 이미지
 import banner5 from "../assets/imgs/banner5.png";
@@ -22,8 +22,15 @@ const Home = () => {
           <SectionTitle>필요로 하는 이웃에게 빌려주세요!</SectionTitle>
         </SectionHead>
         <SectionBody>
-          <OfferBoard />
+          <OfferBoardList />
         </SectionBody>
+        <div
+          style={{ display: "flex", justifyContent: "center", margin: "3% 0" }}
+        >
+          <SeeMore>
+            <p>더보기</p>
+          </SeeMore>
+        </div>
       </Section1>
       <Section2>
         <SectionHead>
@@ -55,7 +62,14 @@ const Home = () => {
           <SectionTitle>빌리고 싶은 물건을 찾아보세요!</SectionTitle>
         </SectionHead>
         <div>
-          <RequestBoard />
+          <RequestBoardList />
+        </div>
+        <div
+          style={{ display: "flex", justifyContent: "center", margin: "3% 0" }}
+        >
+          <SeeMore>
+            <p>더보기</p>
+          </SeeMore>
         </div>
       </Section3>
 
@@ -66,11 +80,11 @@ const Home = () => {
 
 const Section1 = styled.div`
   width: 100%;
-  padding: 5% 10%;
+  padding: 5% 10% 0 10%;
 `;
 const Section2 = styled.div`
   width: 100%;
-  padding: 5% 10%;
+  padding: 5% 10% 0 10%;
 `;
 const Section3 = styled.div`
   width: 100%;
@@ -115,5 +129,23 @@ const RightWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+`;
+
+const SeeMore = styled.div`
+  width: 130px;
+  height: 54px;
+  background: #ffffff;
+  border: 2px solid #afa2ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: -0.5px;
+    color: #8874ff;
+  }
 `;
 export default Home;
