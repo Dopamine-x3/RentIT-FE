@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
+import { Map, MapMarker } from "react-kakao-maps-sdk";
 
 const Maps = ({ onInfoChange }) => {
   const { kakao } = window;
@@ -51,25 +51,19 @@ const Maps = ({ onInfoChange }) => {
       }
     });
   }, [map, keyword]);
+
   useEffect(() => {
     if (onInfoChange) {
       onInfoChange(info);
     }
   }, [info, onInfoChange]);
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter") setKeyword(searchInputValue);
   };
 
   const handleMarkerClick = (marker) => {
     setInfo(marker);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (info) {
-      console.log("Building Info Submitted:", info);
-      // Here, you would typically send the data to a server or handle it as needed
-    }
   };
 
   return (
@@ -99,13 +93,12 @@ const Maps = ({ onInfoChange }) => {
         ))}
       </Map>
 
-
       <input
         type="text"
         onChange={(e) => setSearchInputValue(e.target.value)}
         onKeyPress={handleKeyPress}
         value={searchInputValue}
-        placeholder="주소를 입력해주세요 ex)강남역 or 서울특별시 역삼동"
+        placeholder="주소를 입력해주세요 ex) 강남역 or 서울특별시 역삼동"
         style={{ marginRight: "10px" }}
       />
       <button type="button" onClick={() => setKeyword(searchInputValue)}>
@@ -117,10 +110,8 @@ const Maps = ({ onInfoChange }) => {
           <h3>Building Info</h3>
           <p>Name: {info.content}</p>
           <p>Address: {info.address}</p>
-
         </div>
       )}
-
     </>
   );
 };

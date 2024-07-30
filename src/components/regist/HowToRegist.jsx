@@ -1,7 +1,5 @@
-// src/components/HowToRegist.js
 import React, { useState } from 'react';
 import styled from 'styled-components';
-
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
@@ -18,7 +16,6 @@ const DropdownContainer = styled.div`
   display: inline-block;
   flex: 1;
   margin: 0 10px;
-  
 `;
 
 const DropdownButton = styled.button`
@@ -30,18 +27,18 @@ const DropdownButton = styled.button`
   cursor: pointer;
   width: 100%;
   text-align: center;
-  
 `;
 
 const DropdownContent = styled.div`
   display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
   position: absolute;
+  bottom: 100%; /* 이 속성으로 드롭다운이 버튼 위로 위치하도록 설정 */
+  left: 0;
   background-color: #ffffff;
-  margin-bottom: 1.2px;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
-  
+  margin-bottom: 5px; /* 버튼과 드롭다운 사이에 여백 추가 */
 `;
 
 const DropdownItem = styled.a`
@@ -49,7 +46,6 @@ const DropdownItem = styled.a`
   padding: 12px 16px;
   text-decoration: none;
   display: block;
-  
 
   &:hover {
     background-color: #f1f1f1;
@@ -62,7 +58,7 @@ const categories = {
   shippingCost: ["무료", "착불", "선불"]
 };
 
-const HowToRegist = () => {
+const HowToRegist = ({ setProductCondition, setDeliveryMethod, setDeliveryPrice }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [selected, setSelected] = useState({
     productStatus: "제품상태",
@@ -70,27 +66,38 @@ const HowToRegist = () => {
     shippingCost: "배송비"
   });
 
-  const toggleDropdown = (dropdown) => {
+  const toggleDropdown = (e,dropdown) => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+    e.preventDefault()
   };
 
   const handleCategorySelect = (dropdown, category) => {
+    
     setSelected(prev => ({ ...prev, [dropdown]: category }));
     setOpenDropdown(null);
+
+    // 상태를 상위 컴포넌트에 전달
+    if (dropdown === 'productStatus') {
+      setProductCondition(category);
+    } else if (dropdown === 'deliveryMethod') {
+      setDeliveryMethod(category);
+    } else if (dropdown === 'shippingCost') {
+      setDeliveryPrice(category);
+    }
   };
 
   return (
     <Container>
       {Object.keys(categories).map((key) => (
         <DropdownContainer key={key}>
-          <DropdownButton onClick={() => toggleDropdown(key)}>
+          <DropdownButton onClick={(e) => toggleDropdown(e,key)}>
             {selected[key]}
           </DropdownButton>
           <DropdownContent isOpen={openDropdown === key}>
             {categories[key].map((item, index) => (
-              <DropdownItem 
-                key={index} 
-                href="#" 
+              <DropdownItem
+                key={index}
+              
                 onClick={() => handleCategorySelect(key, item)}
               >
                 {item}
