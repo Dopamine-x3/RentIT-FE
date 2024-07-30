@@ -2,50 +2,47 @@ import React from "react";
 import styled from "styled-components";
 import OfferBoard from "./OfferBoard";
 
-const offerData = [
-  { id: 1, title: "제목 1", description: "설명 1", date: "2024년7월28일" },
-  { id: 2, title: "제목 2", description: "설명 2", date: "2024년7월28일" },
-  { id: 3, title: "제목 3", description: "설명 3", date: "2024년7월28일" },
-  { id: 4, title: "제목 4", description: "설명 4", date: "2024년7월28일" },
-  { id: 5, title: "제목 5", description: "설명 5", date: "2024년7월28일" },
-  { id: 6, title: "제목 6", description: "설명 6", date: "2024년7월28일" },
-  { id: 7, title: "제목 7", description: "설명 7", date: "2024년7월28일" },
-  { id: 8, title: "제목 8", description: "설명 8", date: "2024년7월28일" },
-];
-
-const OfferBoardList = () => {
+const OfferBoardList = ({ boards }) => {
   return (
     <OfferContainer>
-      {offerData.map((offer) => (
-        <OfferBoard key={offer.id} offer={offer} />
-      ))}
+      {boards.length > 0 ? (
+        boards.map((offer) => <OfferBoard key={offer.id} offer={offer} />)
+      ) : (
+        <NoDataMessage>등록된 요청이 없습니다.</NoDataMessage>
+      )}
     </OfferContainer>
   );
 };
 
+const NoDataMessage = styled.p`
+  text-align: center;
+  font-size: 18px;
+  color: #676767;
+`;
+
 const OfferContainer = styled.div`
   display: grid;
-  gap: 5rem;
+  gap: 8.5rem; /* 공백을 줄였습니다. */
 
-  /* 작은 화면에서 2열 레이아웃 */
+  /* 작은 화면에서 1열 레이아웃 */
   @media (min-width: 640px) {
     /* sm */
-    grid-template-columns: repeat(2, 1.5fr);
-    gap: 8.5rem;
+    grid-template-columns: repeat(4, 1fr); /* 2열 레이아웃 */
+    gap: 8.5rem; /* 공백을 줄였습니다. */
   }
 
   /* 큰 화면에서 3열 레이아웃 */
   @media (min-width: 1024px) {
     /* lg */
-    grid-template-columns: repeat(3, 1.5fr);
-    gap: 8.5rem;
+    grid-template-columns: repeat(4, 1fr); /* 3열 레이아웃 */
+    gap: 8.5rem; /* 공백을 줄였습니다. */
   }
 
   /* 엑스트라 큰 화면에서 4열 레이아웃 */
   @media (min-width: 1280px) {
     /* xl */
-    grid-template-columns: repeat(4, 1.5fr);
-    gap: 8.5rem;
+    grid-template-columns: repeat(4, 1fr); /* 4열 레이아웃 */
+    gap: 8.5rem; /* 공백을 줄였습니다. */
   }
 `;
 

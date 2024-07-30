@@ -252,7 +252,7 @@ const Header = () => {
 
   const handleLogin = async () => {
     try {
-      const { accessToken, refreshToken } = await postLogin(email, password);
+      await postLogin(email, password);
       setLogin(true);
       navigate("/");
       handleClose();

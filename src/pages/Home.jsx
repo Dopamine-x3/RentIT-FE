@@ -1,4 +1,6 @@
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { getRentBoards } from "../apis/axios";
 
 // 컴포넌트
 import Header from "../components/layout/header";
@@ -13,6 +15,29 @@ import banner6 from "../assets/imgs/banner6.png";
 import banner7 from "../assets/imgs/banner7.png";
 
 const Home = () => {
+  const [rentBoards, setRentBoards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 데이터 가져오기
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getRentBoards();
+        setRentBoards(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <div>
       <Header />
@@ -22,7 +47,7 @@ const Home = () => {
           <SectionTitle>필요로 하는 이웃에게 빌려주세요!</SectionTitle>
         </SectionHead>
         <SectionBody>
-          <OfferBoardList />
+          <OfferBoardList boards={rentBoards.slice(0, 8)} />
         </SectionBody>
         <div
           style={{ display: "flex", justifyContent: "center", margin: "3% 0" }}
@@ -62,7 +87,7 @@ const Home = () => {
           <SectionTitle>빌리고 싶은 물건을 찾아보세요!</SectionTitle>
         </SectionHead>
         <div>
-          <RequestBoardList />
+          <RequestBoardList boards={rentBoards.slice(0, 6)} />
         </div>
         <div
           style={{ display: "flex", justifyContent: "center", margin: "3% 0" }}
@@ -73,7 +98,7 @@ const Home = () => {
         </div>
       </Section3>
 
-      <Footer  />
+      <Footer />
     </div>
   );
 };
@@ -116,17 +141,17 @@ const SectionTitle = styled.h4`
 `;
 const BannerImg = styled.img`
   width: ${(props) => props.width};
-  heigth: ${(props) => props.height};
+  height: ${(props) => props.height};
   filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.25));
 `;
 
 const LeftWrapper = styled.div`
   width: ${(props) => props.width};
-  heigth: ${(props) => props.height};
+  height: ${(props) => props.height};
 `;
 const RightWrapper = styled.div`
   width: ${(props) => props.width};
-  heigth: ${(props) => props.height};
+  height: ${(props) => props.height};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -149,4 +174,5 @@ const SeeMore = styled.div`
     color: #8874ff;
   }
 `;
+
 export default Home;

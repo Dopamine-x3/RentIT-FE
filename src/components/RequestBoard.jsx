@@ -1,19 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { formatRelativeTime } from "../utils/dateUtils";
 
 const RequestBoard = ({ request }) => {
   if (!request) return null;
 
+  const requestDate = new Date(request.date); // 문자열을 Date 객체로 변환
+  const relativeTime = formatRelativeTime(requestDate); // 상대적인 시간 포맷
+
   return (
     <RequestCard>
-      <img src={request.image} alt={request.productName} />
+      <img src={request.imageUrls[0]} alt={request.productName} />
       <RequestContent>
         <div>
           <h2>{request.price}</h2>
           <h4>{request.productName}</h4>
         </div>
-        <p>{request.date}</p>
+        <p>{relativeTime}</p>
       </RequestContent>
     </RequestCard>
   );
@@ -25,7 +29,7 @@ RequestBoard.propTypes = {
     price: PropTypes.string.isRequired,
     productName: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
+    imageUrls: PropTypes.arrayOf(PropTypes.string).isRequired, // imageUrls로 수정
   }).isRequired,
 };
 
