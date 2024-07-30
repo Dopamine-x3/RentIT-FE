@@ -21,6 +21,10 @@ export const FlexDiv = styled.div`
 
 `
 
+export const Comp = styled.div`
+  color: ${({ $draggable }) => $draggable || 'black'};
+`;
+
 export const GridDiv = styled.div`
     display: grid;
     grid-template-columns: ${({ gridTC }) => gridTC};
@@ -51,14 +55,14 @@ export const MaxWidthDiv = styled.div`
     justify-content: ${({ jc }) => jc ? jc : 'start'};
     align-items: ${({ alignItem }) => alignItem ? alignItem : 'start'};
     margin: ${({ margin }) => margin ? margin : 0} auto;
-    margin-top: ${({ marginTop }) => marginTop};
+    margin-top: ${({ $marginTop }) => $marginTop};
     padding : ${({ padding }) => padding ? padding : 0};
     gap : ${({ gap }) => gap ? gap : 0};
 `
 
 export const Div = styled.div`
     display: flex;
-    flex-direction: ${({ fDirection }) => fDirection ? fDirection : 'column'};
+    flex-direction: ${({ $fDirection }) => $fDirection || 'column'};
     justify-content: ${({ jc }) => jc ? jc : 'start'};
     align-items: ${({ alignItem }) => alignItem ? alignItem : 'start'};
     width: ${({ width }) => width};
@@ -70,8 +74,8 @@ export const Div = styled.div`
     background-color: ${({ bgColor }) => bgColor ? bgColor : 'white'};
     border: ${({ border }) => border ? border : 'none'};
     border-radius: ${({ bRadius }) => bRadius ? bRadius : 'none'};
-    border-top: ${({ borderTop }) => borderTop};
-    border-bottom: ${({ borderBottom }) => borderBottom};
+    border-top: ${({ $borderTop }) => $borderTop};
+    border-bottom: ${({ $borderBottom }) => $borderBottom};
     top: ${({ top }) => top ? top : 0};
     bottom: ${({ bottom }) => bottom ? bottom : 0};
     position: ${({ position }) => position};

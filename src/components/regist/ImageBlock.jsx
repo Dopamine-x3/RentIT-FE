@@ -1,19 +1,67 @@
-import React, { useState, useEffect } from 'react'
-import { Div } from '../globalStyle'
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Div } from '../globalStyle';
 import { FirstPreview, OtherPreview, PreviewContainer } from './RegistStyled';
+import imageCompression from 'browser-image-compression';
 
 const ImageBlock = ({ image, id }) => {
-
   const [imageURL, setImageURL] = useState([]);
+  // const dispatch = useDispatch();
 
   useEffect(() => {
     if (image) {
       setImageURL(image);
     }
     return () => {
+      imageURL.forEach(url => URL.revokeObjectURL(url));
       setImageURL([]);
+    };
+  }, [id, image]);
+
+  const onImageChangeHandler = async (event) => {
+    console.log('변화', event.target.files);
+    if (!event.target.files.length) {
+      return;
+    } else {
+      const imageLists = event.target.files;
+      if (imageLists.length > 5) {
+        return window.alert('물품 이미지는 최대 5장까지만 등록 가능합니다');
+      }
+
+      // 이미지 미리보기
+      const ImageURLLists = [];
+      for (let i = 0; i < imageLists.length; i++) {
+        if (imageLists[i].size > 10000000) {
+          return window.alert('10MB 미만의 이미지만 첨부해주세요!');
+        }
+        console.log('originalFile instanceof Blob', imageLists[i] instanceof Blob); // true
+        console.log(`originalFile size ${imageLists[i].size} bytes`);
+
+        const currentImageUrl = URL.createObjectURL(imageLists[i]);
+        ImageURLLists.push(currentImageUrl);
+      }
+      setImageURL(ImageURLLists);
+
+      const compressedImageList = [];
+      for (let i = 0; i < imageLists.length; i++) {
+        const compressedFile = await imageCompression(imageLists[i], {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 567,
+        });
+
+        console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+        console.log(`compressedFile size ${compressedFile.size} bytes`); // smaller than maxSizeMB
+        compressedImageList.push(compressedFile);
+      }
+
+      // 서버 통신 시작
+      const formData = new FormData();
+      compressedImageList.forEach((file, index) => {
+        formData.append('images', file, `image${index}.jpg`);
+      });
+      // dispatch(storeImage(formData));
     }
-  }, [id, image])
+  };
 
   return (
     <Div width="100%" gap="1rem">
@@ -27,7 +75,6 @@ const ImageBlock = ({ image, id }) => {
         </FirstPreview>
       </label>
       <PreviewContainer>
-
         <OtherPreview theme={'primary'} children={
           imageURL[1] ? <img src={imageURL[1]} style={{ width: '100%', height: '100%', objectFit: 'contain' }} alt='' /> : <></>
         } />
@@ -41,10 +88,9 @@ const ImageBlock = ({ image, id }) => {
           imageURL[4] ? <img src={imageURL[4]} style={{ width: '100%', height: '100%', objectFit: 'contain' }} alt='' /> : <></>
         } />
       </PreviewContainer>
-      <input type={'file'} id='file' accept="image/*" multiple style={{ display: 'none' }} /> {/* onChange={onImageChangeHandler} */}
-
+      <input type={'file'} id='file' accept="image/*" multiple style={{ display: 'none' }} onChange={onImageChangeHandler} />
     </Div>
-  )
-}
+  );
+};
 
-export default ImageBlock
+export default ImageBlock;

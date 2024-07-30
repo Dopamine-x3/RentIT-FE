@@ -1,16 +1,16 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import { Div, MaxWidthDiv } from '../globalStyle'
+import { Div, MaxWidthDiv, Comp } from '../globalStyle'
 
-const footer= ({ topRem, botRem }) =>{
+const footer = ({ topRem, botRem }) => {
     const navi = useNavigate();
 
     return (
         <Div width="100%" margin={`${topRem}rem 0 ${botRem}rem 0`} style={{ borderTop: "1px solid #e6e6e6" }}>
-            <MaxWidthDiv marginTop="2rem" gap="2rem">
-                <Div fDirection="row" gap="2rem">
-                    <FooterItems cursor="pointer" borderRight="1px solid #e6e6e6" onClick={() => { navi("/service") }}>서비스소개</FooterItems>
+            <MaxWidthDiv $marginTop="2rem" gap="2rem">
+                <Div $fDirection="row" gap="2rem">
+                    <FooterItems cursor="pointer" $borderRight="1px solid #e6e6e6" onClick={() => { navi("/service") }}>서비스소개</FooterItems>
                     <FooterItems cursor="pointer" onClick={() => { navi("/team") }}>팀원소개</FooterItems>
                 </Div>
                 <Div gap="0.5rem">
@@ -20,6 +20,7 @@ const footer= ({ topRem, botRem }) =>{
                 <Div gap="0.5rem">
                     <FooterSpan>운영시간 9시-21시(일요일 제외 휴무 없음, 점심시간 자율, 1시간 반)</FooterSpan>
                 </Div>
+
             </MaxWidthDiv>
         </Div>
     )
@@ -29,7 +30,7 @@ export default footer
 
 const FooterItems = styled.div`
   padding-right: 2rem;
-  border-right: ${({ borderRight }) => borderRight};
+  border-right: ${({ $borderRight }) => $borderRight};
   color: #767676;
   font-weight: 700;
   cursor: ${({ cursor }) => cursor};

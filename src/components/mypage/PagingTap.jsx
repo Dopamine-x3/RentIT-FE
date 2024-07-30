@@ -12,7 +12,7 @@ function PagingTap({data, btnInfo, currentBtn, buttonClickHandler}) {
 
   return (
     <Div width="100%" marginTop="3rem" gap="3rem">
-        <Div fDirection="row" width="100%" borderBottom="1px solid #e6e6e6" gap="5rem">
+        <Div $fDirection="row" width="100%" $borderBottom="1px solid #e6e6e6" gap="5rem">
             {btnInfo.map((item) => 
                 <LPBtn
                 key={nanoid()}

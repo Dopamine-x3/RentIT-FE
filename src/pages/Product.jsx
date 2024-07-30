@@ -30,7 +30,7 @@ function Product() {
         <Div marginTop="10rem">
           <DetailTitle>제품 상세보기</DetailTitle>
         </Div>
-        <Div width="100%" marginTop="2rem" fDirection="row" jc="space-between" gap="2rem">
+        <Div width="100%" marginTop="2rem" $fDirection="row" jc="space-between" gap="2rem">
           {/* 왼쪽 div 영역 */}
           <Div width="100%">
             <Div width="100%">
@@ -51,21 +51,21 @@ function Product() {
           {/* 오른쪽 div 영역 */}
           <Div width="100%" gap="1rem" style={{ boxSizing: "border-box" }}>
             <Div width="100%">
-              <Div fDirection="row" width="100%" jc="space-between">
+              <Div $fDirection="row" width="100%" jc="space-between">
                 <React.Suspense fallback={<div>Loading...</div>}>
                   <Title>상품 이름</Title>
                   {/* <Zzim /> */}
                 </React.Suspense>
               </Div>
 
-              <Div width='100%' fDirection='row' alignItem='center' gap='10px' jc="space-between">
+              <Div width='100%' $fDirection='row' alignItem='center' gap='10px' jc="space-between">
                 <React.Suspense fallback={<div>Loading...</div>}>
                   <PriceTitle><span style={{ fontSize: '13px' }}>/ 1일 기준</span></PriceTitle>
                   <SellorInfo />
                 </React.Suspense>
 
               </Div>
-              <Div width='100%' fDirection='row'>
+              <Div width='100%' $fDirection='row'>
                 <HowProduct product={product} />
               </Div>
 
@@ -77,7 +77,7 @@ function Product() {
             </Div>
 
             <Div width="100%" gap="1rem">
-              <Div fDirection="row" width="100%" gap="1rem" alignItem="center">
+              <Div $fDirection="row" width="100%" gap="1rem" alignItem="center">
 
                 <ButtonWrapper>
                   {/* 이건 사용자가 볼거임 */}

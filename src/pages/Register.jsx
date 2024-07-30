@@ -1,6 +1,6 @@
 
 
-import React, { lazy, Suspense, useEffect } from 'react'
+import React, { lazy, Suspense, useEffect, useState } from 'react'
 import ImageBlock from '../components/regist/ImageBlock'
 import { Div, FlexDiv, MaxWidthDiv } from '../components/globalStyle'
 import HeaderNav from '../components/layout/header'
@@ -21,6 +21,12 @@ import HowToRegist from '../components/regist/HowToRegist'
 const MapComp = lazy(() => import('../components/regist/Map'))
 
 function Register() {
+  const [buildingInfo, setBuildingInfo] = useState(null);
+
+  const handleInfoChange = (info) => {
+    setBuildingInfo(info);
+  };
+
   const autofocus = useRef();
   const navigate = useNavigate();
   // const { image, location } = useSelector(state => state.Post)
@@ -32,7 +38,10 @@ function Register() {
     price: '',
     location: '',
     images: '',
+    buildingInfo
   })
+
+
 
 
   // const { mutate, isLoading } = useMutation({
@@ -101,7 +110,7 @@ function Register() {
         <Div marginTop="5rem">
           <RegistTitle>대여물품 등록</RegistTitle>
         </Div>
-        <Div width="100%" marginTop="2rem" fDirection="row" jc="space-between" gap="2rem">
+        <Div width="100%" marginTop="2rem" $fDirection="row" jc="space-between" gap="2rem">
           <Div gap="1rem">
             <TitleInput
               ref={autofocus}
@@ -138,12 +147,15 @@ function Register() {
 
               <HowToRegist />
               <Suspense fallback={<div>Loading map...</div>}>
-                <MapComp theme={'regist'} />
+                <MapComp theme={'regist'} onInfoChange={handleInfoChange} />
               </Suspense>
-
-
-
-
+              {/* {buildingInfo && (
+                <div style={{ marginTop: "20px" }}>
+                  <h3>Selected Building Info</h3>
+                  <p>Name: {buildingInfo.content}</p>
+                  <p>Address: {buildingInfo.address}</p>
+                </div>
+              )} */}
 
               <RegistBtn> 등록하기 </RegistBtn>
             </form>

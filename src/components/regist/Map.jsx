@@ -1,347 +1,128 @@
-// src/components/Map.jsx
+import React, { useState, useEffect } from "react";
+import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 
-import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
-
-const MapContainer = styled.div`
-  width: 100%;
-  height: 200px;
-  position: relative;
-`;
-
-const SearchInput = styled.input`
-  margin: 10px;
-  padding: 5px;
-  font-size: 16px;
-`;
-
-const InfoDiv = styled.div`
-  margin: 10px;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-`;
-
-const ListItem = styled.li`
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #f0f0f0;
-  }
-`;
-
-const MarkerIcon = styled.span`
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  background-color: #1e90ff;
-  border-radius: 50%;
-  margin-right: 10px;
-`;
-
-const HiddenInput = styled.input`
-  display: none;
-`;
-
-const Map = () => {
-  const [map, setMap] = useState(null);
+const Maps = ({ onInfoChange }) => {
+  const { kakao } = window;
+  const [info, setInfo] = useState(null);
   const [markers, setMarkers] = useState([]);
-  const [searchInput, setSearchInput] = useState('');
-  const [buildingInfo, setBuildingInfo] = useState({});
-  const mapContainerRef = useRef(null);
-  const infowindow = useRef(null);
+  const [map, setMap] = useState(null);
+  const [searchInputValue, setSearchInputValue] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [position, setPosition] = useState({ lat: 37.5665, lng: 126.978 }); // Default to Seoul
 
   useEffect(() => {
-    const loadKakaoMapScript = () => {
-      return new Promise((resolve) => {
-        if (window.kakao) {
-          resolve(window.kakao);
-          return;
-        }
-        const script = document.createElement('script');
-        script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=a6d9cc25b43f0d4b02155ba9a5d84cb3&autoload=false';
-        script.onload = () => resolve(window.kakao);
-        document.head.appendChild(script);
-      });
-    };
+    if (!map) return;
+    var geocoder = new kakao.maps.services.Geocoder();
+    geocoder.coord2Address(position.lng, position.lat, displayCenterInfo);
+  }, [position, map]);
 
-    const initializeMap = async () => {
-      const kakao = await loadKakaoMapScript();
-      kakao.maps.load(() => {
-        const mapOption = {
-          center: new kakao.maps.LatLng(37.566826, 126.9786567),
-          level: 3,
-        };
-        const mapInstance = new kakao.maps.Map(mapContainerRef.current, mapOption);
-        setMap(mapInstance);
-      });
-    };
-
-    initializeMap();
-  }, []);
-
-  const searchPlaces = () => {
-    if (!searchInput.trim()) {
-      alert('키워드를 입력해주세요!');
-      return;
-    }
-
-    const kakao = window.kakao;
-    const ps = new kakao.maps.services.Places();
-    ps.keywordSearch(searchInput, placesSearchCB);
-  };
-
-  const placesSearchCB = (data, status, pagination) => {
+  function displayCenterInfo(result, status) {
     if (status === kakao.maps.services.Status.OK) {
-      displayPlaces(data);
-      displayPagination(pagination);
-    } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-      alert('검색 결과가 존재하지 않습니다.');
-    } else if (status === kakao.maps.services.Status.ERROR) {
-      alert('검색 결과 중 오류가 발생했습니다.');
+      let detailAddr = !!result[0].road_address
+        ? result[0].road_address.address_name
+        : result[0].address.address_name;
+      setKeyword(detailAddr);
     }
-  };
+  }
 
-  const displayPlaces = (places) => {
-    removeAllMarkers();
-    const bounds = new kakao.maps.LatLngBounds();
-    const fragment = document.createDocumentFragment();
+  useEffect(() => {
+    if (!map) return;
+    const ps = new kakao.maps.services.Places();
 
-    places.forEach((place, index) => {
-      const placePosition = new kakao.maps.LatLng(place.y, place.x);
-      const marker = addMarker(placePosition, index);
-      const itemEl = getListItem(index, place);
+    ps.keywordSearch(`${keyword} 건물`, (data, status) => {
+      if (status === kakao.maps.services.Status.OK) {
+        const bounds = new kakao.maps.LatLngBounds();
+        const markersList = [];
 
-      bounds.extend(placePosition);
+        for (let i = 0; i < data.length; i++) {
+          markersList.push({
+            position: {
+              lat: data[i].y,
+              lng: data[i].x,
+            },
+            content: data[i].place_name,
+            address: data[i].address_name,
+          });
+          bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+        }
+        setMarkers(markersList);
 
-      marker.addListener('mouseover', () => {
-        displayInfowindow(marker, place.place_name);
-      });
-
-      marker.addListener('click', () => {
-        addLocationDiv(place);
-      });
-
-      marker.addListener('mouseout', () => {
-        infowindow.current?.close();
-      });
-
-      itemEl.addEventListener('mouseover', () => {
-        displayInfowindow(marker, place.place_name);
-      });
-
-      itemEl.addEventListener('mouseout', () => {
-        infowindow.current?.close();
-      });
-
-      fragment.appendChild(itemEl);
-    });
-
-    const listEl = document.getElementById('placesList');
-    removeAllChildNodes(listEl);
-    listEl.appendChild(fragment);
-
-    const menuEl = document.getElementById('menu_wrap');
-    menuEl.scrollTop = 0;
-    map.setBounds(bounds);
-  };
-
-  const getListItem = (index, place) => {
-    const el = document.createElement('li');
-    el.className = 'item';
-    el.innerHTML = `
-      <MarkerIcon class="markerbg marker_${index + 1}"></MarkerIcon>
-      <div class="info">
-        <h5>${place.place_name}</h5>
-        ${place.road_address_name ? `<span>${place.road_address_name}</span><span class="jibun gray">${place.address_name}</span>` : `<span>${place.address_name}</span>`}
-        <span class="tel">${place.phone}</span>
-      </div>
-    `;
-    el.addEventListener('click', () => addLocationDiv(place));
-    return el;
-  };
-
-  const addLocationDiv = (place) => {
-    const locationHtml = `
-      <div class="card mt-3">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col-1">
-              <i class="bi bi-geo-alt-fill fa-2x"></i>
-            </div>
-            <div class="col ms-3">
-              <div class="font-weight-bold text-success text-uppercase mb-1">
-                ${place.place_name}
-              </div>
-              <div class="text-black-50 font-weight-bold small">
-                ${place.road_address_name}
-              </div>
-            </div>
-            <div class="col-auto">
-              <button
-                class="btn btn-lg btn-transparent"
-                onClick={deleteLocation}
-              >
-                <i class="bi bi-x-square"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    setBuildingInfo({
-      id: place.id,
-      placeName: place.place_name,
-      roadAddressName: place.road_address_name,
-      placeUrl: place.place_url,
-      latitude: place.y,
-      longitude: place.x,
-    });
-
-    const locateDiv = document.getElementById('locateDiv');
-    locateDiv.innerHTML = locationHtml;
-
-    const locateOffset = locateDiv.offsetTop;
-    window.scrollTo({
-      top: locateOffset,
-      behavior: 'smooth',
-    });
-
-    locateDiv.classList.add('blinking');
-    setTimeout(() => {
-      locateDiv.classList.remove('blinking');
-    }, 1000);
-
-    // Update hidden inputs
-    document.getElementById('placeName').value = place.place_name;
-    document.getElementById('roadAddressName').value = place.road_address_name;
-  };
-
-  const deleteLocation = () => {
-    document.getElementById('locateDiv').innerHTML = '';
-    setBuildingInfo({});
-    document.getElementById('placeName').value = '';
-    document.getElementById('roadAddressName').value = '';
-  };
-
-  const addMarker = (position, idx) => {
-    const kakao = window.kakao;
-    const imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png';
-    const imageSize = new kakao.maps.Size(36, 37);
-    const imgOptions = {
-      spriteSize: new kakao.maps.Size(36, 691),
-      spriteOrigin: new kakao.maps.Point(0, (idx * 46) + 10),
-      offset: new kakao.maps.Point(13, 37),
-    };
-
-    const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions);
-    const marker = new kakao.maps.Marker({
-      position: position,
-      image: markerImage,
-    });
-
-    marker.setMap(map);
-    setMarkers((prevMarkers) => [...prevMarkers, marker]);
-
-    return marker;
-  };
-
-  const removeAllMarkers = () => {
-    markers.forEach((marker) => marker.setMap(null));
-    setMarkers([]);
-  };
-
-  const displayPagination = (pagination) => {
-    const paginationEl = document.getElementById('pagination');
-    removeAllChildNodes(paginationEl);
-
-    for (let i = 1; i <= pagination.last; i++) {
-      const el = document.createElement('a');
-      el.href = '#';
-      el.innerHTML = i;
-
-      if (i === pagination.current) {
-        el.className = 'on';
-      } else {
-        el.onclick = () => pagination.gotoPage(i);
+        map.setBounds(bounds);
       }
-
-      paginationEl.appendChild(el);
-    }
-  };
-
-  const displayInfowindow = (marker, title) => {
-    if (infowindow.current) {
-      infowindow.current.close();
-    }
-
-    const kakao = window.kakao;
-    const infowindowInstance = new kakao.maps.InfoWindow({
-      position: marker.getPosition(),
-      content: `<span class="info-title">${title}</span>`,
     });
-
-    infowindowInstance.open(map, marker);
-    infowindow.current = infowindowInstance;
+  }, [map, keyword]);
+  useEffect(() => {
+    if (onInfoChange) {
+      onInfoChange(info);
+    }
+  }, [info, onInfoChange]);
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") setKeyword(searchInputValue);
   };
 
-  const removeAllChildNodes = (el) => {
-    while (el.hasChildNodes()) {
-      el.removeChild(el.lastChild);
+  const handleMarkerClick = (marker) => {
+    setInfo(marker);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (info) {
+      console.log("Building Info Submitted:", info);
+      // Here, you would typically send the data to a server or handle it as needed
     }
   };
 
   return (
-    <div>
-      <SearchInput
+    <>
+      <Map
+        center={{ lat: position.lat, lng: position.lng }}
+        level={3}
+        style={{ width: "100%", height: "200px" }}
+        onCreate={(map) => setMap(map)}
+        onDragEnd={(map) => {
+          setPosition({
+            lat: map.getCenter().getLat(),
+            lng: map.getCenter().getLng(),
+          });
+        }}
+      >
+        {markers.map((marker) => (
+          <MapMarker
+            key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
+            position={marker.position}
+            onClick={() => handleMarkerClick(marker)}
+          >
+            {info && info.content === marker.content && (
+              <div style={{ color: "#000" }}>{marker.content}</div>
+            )}
+          </MapMarker>
+        ))}
+      </Map>
+
+
+      <input
         type="text"
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-        placeholder="건물명을 입력하세요"
+        onChange={(e) => setSearchInputValue(e.target.value)}
+        onKeyPress={handleKeyPress}
+        value={searchInputValue}
+        placeholder="주소를 입력해주세요 ex)강남역 or 서울특별시 역삼동"
+        style={{ marginRight: "10px" }}
       />
-      <button onClick={searchPlaces}>검색</button>
-      <MapContainer ref={mapContainerRef}></MapContainer>
-      <InfoDiv id="locateDiv">
-        {buildingInfo.placeName && (
-          <div className="card mt-3">
-            <div className="card-body">
-              <div className="row no-gutters align-items-center">
-                <div className="col-1">
-                  <i className="bi bi-geo-alt-fill fa-2x"></i>
-                </div>
-                <div className="col ms-3">
-                  <div className="font-weight-bold text-success text-uppercase mb-1">
-                    {buildingInfo.placeName}
-                  </div>
-                  <div className="text-black-50 font-weight-bold small">
-                    {buildingInfo.roadAddressName}
-                  </div>
-                </div>
-                <div className="col-auto">
-                  <button
-                    className="btn btn-lg btn-transparent"
-                    onClick={deleteLocation}
-                  >
-                    <i className="bi bi-x-square"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </InfoDiv>
-      <HiddenInput type="hidden" id="placeName" name="placeName" />
-      <HiddenInput type="hidden" id="roadAddressName" name="roadAddressName" />
-      <ul id="placesList"></ul>
-      <div id="pagination"></div>
-    </div>
+      <button type="button" onClick={() => setKeyword(searchInputValue)}>
+        검색
+      </button>
+
+      {info && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Building Info</h3>
+          <p>Name: {info.content}</p>
+          <p>Address: {info.address}</p>
+
+        </div>
+      )}
+
+    </>
   );
 };
 
-export default Map;
+export default Maps;
