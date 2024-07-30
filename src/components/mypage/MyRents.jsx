@@ -1,18 +1,17 @@
-import React from 'react'
-import { nanoid } from 'nanoid'
-import styled from 'styled-components'
-import { Div } from '../globalStyle'
-import { useNavigate } from 'react-router-dom'
+import React from "react";
+import { nanoid } from "nanoid";
+import styled from "styled-components";
+import { Div } from "../layout/globalStyle";
+import { useNavigate } from "react-router-dom";
 
-function MyRents({data}) {
+function MyRents({ data }) {
   const navi = useNavigate();
-  
- 
+
   return (
     // data?.myList.length === 0
     // ? <Div width="100%" jc="center" alignItem="center" style={{color:"#767676"}}>대여중인 상품이 없습니다</Div>
     // : <Div gap="1rem" width="100%">
-    //     {data?.myList.map((item) => 
+    //     {data?.myList.map((item) =>
     //     <CardDiv
     //       key={nanoid()}
     //       onClick={()=>{navi(`/detail/${item?.productId}`)}}
@@ -38,7 +37,7 @@ function MyRents({data}) {
     //             return <StatusDiv color='#767676'>반납완료</StatusDiv>
     //           case "rejected" :
     //             return <StatusDiv>승인거절</StatusDiv>
-    //           default: 
+    //           default:
     //             return null
     //         }
     //       })()}
@@ -46,16 +45,23 @@ function MyRents({data}) {
     //     </CardDiv>
     //     )}
     //   </Div>
-    <Div width="100%" jc="center" alignItem="center" style={{color:"#767676"}}>대여중인 상품이 없습니다</Div>
-  )
+    <Div
+      width="100%"
+      jc="center"
+      alignItem="center"
+      style={{ color: "#767676" }}
+    >
+      대여중인 상품이 없습니다
+    </Div>
+  );
 }
 
-export default MyRents
+export default MyRents;
 
 const Img = styled.img`
   width: 100px;
   height: 100px;
-`
+`;
 
 const CardDiv = styled.div`
   display: flex;
@@ -68,7 +74,7 @@ const CardDiv = styled.div`
   &:hover {
     box-shadow: 1px 1px 5px rgb(0, 0, 0, 0.5);
   }
-`
+`;
 
 const StatusDiv = styled.div`
   display: flex;
@@ -76,6 +82,6 @@ const StatusDiv = styled.div`
   align-items: center;
   width: 8rem;
   height: 3rem;
-  background-color: ${({bgColor}) => bgColor ? bgColor : 'white'};
-  color: ${({color}) => color ? color : 'white'};
-`
+  background-color: ${({ bgColor }) => (bgColor ? bgColor : "white")};
+  color: ${({ color }) => (color ? color : "white")};
+`;

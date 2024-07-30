@@ -1,17 +1,17 @@
-import { nanoid } from 'nanoid'
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
-import { Div } from '../globalStyle'
+import { nanoid } from "nanoid";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { Div } from "../layout/globalStyle";
 
-function MyProducts({data}) {
+function MyProducts({ data }) {
   const navi = useNavigate();
 
   return (
     // data?.myList.length === 0
     // ? <Div width="100%" jc="center" alignItem="center" style={{color:"#767676"}}>작성한 글이 없습니다</Div>
     // : <Div gap="1rem" width="100%">
-    //     {data?.myList.map((item) => 
+    //     {data?.myList.map((item) =>
     //     <CardDiv
     //       key={nanoid()}
     //       onClick={()=>{navi(`/detail/${item?.id}`)}}
@@ -24,16 +24,23 @@ function MyProducts({data}) {
     //     </CardDiv>
     //     )}
     //   </Div>
-    <Div width="100%" jc="center" alignItem="center" style={{color:"#767676"}}>작성한 글이 없습니다</Div>
-  )
+    <Div
+      width="100%"
+      jc="center"
+      alignItem="center"
+      style={{ color: "#767676" }}
+    >
+      작성한 글이 없습니다
+    </Div>
+  );
 }
 
-export default MyProducts
+export default MyProducts;
 
 const Img = styled.img`
   width: 100px;
   height: 100px;
-`
+`;
 
 const CardDiv = styled.div`
   display: flex;
@@ -46,4 +53,4 @@ const CardDiv = styled.div`
   &:hover {
     box-shadow: 1px 1px 5px rgb(0, 0, 0, 0.5);
   }
-`
+`;

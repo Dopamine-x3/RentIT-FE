@@ -1,24 +1,29 @@
-
-
-import React, { lazy, Suspense, useEffect } from 'react'
-import ImageBlock from '../components/regist/ImageBlock'
-import { Div, FlexDiv, MaxWidthDiv } from '../components/globalStyle'
-import HeaderNav from '../components/layout/header'
-import useInput from '../hooks/useInput'
+import React, { lazy, Suspense, useEffect } from "react";
+import ImageBlock from "../components/regist/ImageBlock";
+import { Div, FlexDiv, MaxWidthDiv } from "../components/layout/globalStyle";
+import HeaderNav from "../components/layout/header";
+import useInput from "../hooks/useInput";
 // import { getCookie } from '../shared/Cookies'
-import { DescInput, PriceDiv, PriceInput, PriceSpan, RegistBtn, RegistTitle, TitleInput } from '../components/regist/RegistStyled'
-import { useNavigate } from 'react-router-dom'
-import Footer from '../components/layout/footer'
-import RegistDropdown from '../components/regist/RegistDropdown'
+import {
+  DescInput,
+  PriceDiv,
+  PriceInput,
+  PriceSpan,
+  RegistBtn,
+  RegistTitle,
+  TitleInput,
+} from "../components/regist/RegistStyled";
+import { useNavigate } from "react-router-dom";
+import Footer from "../components/layout/footer";
+import RegistDropdown from "../components/regist/RegistDropdown";
 
-import { useRef } from 'react'
-import ModalSeller from '../components/detail/ModalSeller'
-import useDropdown from '../hooks/useDropdown'
-import styled from 'styled-components'
-import HowToRegist from '../components/regist/HowToRegist'
+import { useRef } from "react";
+import ModalSeller from "../components/detail/ModalSeller";
+import useDropdown from "../hooks/useDropdown";
+import styled from "styled-components";
+import HowToRegist from "../components/regist/HowToRegist";
 
-
-const MapComp = lazy(() => import('../components/regist/Map'))
+const MapComp = lazy(() => import("../components/regist/Map"));
 
 function Register() {
   const autofocus = useRef();
@@ -29,11 +34,10 @@ function Register() {
   const { values, onChange } = useInput({
     title: "",
     description: "",
-    price: '',
-    location: '',
-    images: '',
-  })
-
+    price: "",
+    location: "",
+    images: "",
+  });
 
   // const { mutate, isLoading } = useMutation({
   //   mutationKey:['mutate'],
@@ -75,12 +79,12 @@ function Register() {
     //   images:image,
     //   location:location
     // })
-  }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
     autofocus.current.focus();
-  }, [])
+  }, []);
 
   // useEffect(()=>{
   //   if(!accessToken){
@@ -94,57 +98,57 @@ function Register() {
 
   return (
     <FlexDiv boxShadow="none">
-
       {/* components/global */}
       <HeaderNav />
       <MaxWidthDiv>
         <Div marginTop="5rem">
           <RegistTitle>대여물품 등록</RegistTitle>
         </Div>
-        <Div width="100%" marginTop="2rem" fDirection="row" jc="space-between" gap="2rem">
+        <Div
+          width="100%"
+          marginTop="2rem"
+          fDirection="row"
+          jc="space-between"
+          gap="2rem"
+        >
           <Div gap="1rem">
             <TitleInput
               ref={autofocus}
-              name='title'
-              placeholder='제목 : 상품명이 드러나도록 제목을 적어주세요!'
+              name="title"
+              placeholder="제목 : 상품명이 드러나도록 제목을 적어주세요!"
               // defaultValue={values.title}
               // onChange={onChange}
               maxLength={20}
             />
             <ImageBlock />
           </Div>
-          <div style={{ height: '685px', border: '1px solid #D7D7D7' }}></div>
+          <div style={{ height: "685px", border: "1px solid #D7D7D7" }}></div>
           <Div width="100%">
-
-            <form onSubmit={onSubmitHandler} > {/*  */}
+            <form onSubmit={onSubmitHandler}>
+              {" "}
+              {/*  */}
               <RegistDropdown />
               <PriceDiv>
                 <PriceSpan>가격</PriceSpan>
                 <PriceInput
                   min={1}
-                  type={'number'}
-                  name='price'
-                  placeholder='가격을 책정해주세요'
-                // defaultValue={values.price}
-                // onChange={onChange}
+                  type={"number"}
+                  name="price"
+                  placeholder="가격을 책정해주세요"
+                  // defaultValue={values.price}
+                  // onChange={onChange}
                 />
               </PriceDiv>
               <DescInput
-                name='description'
-                placeholder='해당 물품의 기종, 상태, 구매일자 등 상세하게 적어주세요!'
-              // defaultValue={values.description}
-              // onChange={onChange}
+                name="description"
+                placeholder="해당 물품의 기종, 상태, 구매일자 등 상세하게 적어주세요!"
+                // defaultValue={values.description}
+                // onChange={onChange}
               />
-
               <HowToRegist />
               <Suspense fallback={<div>Loading map...</div>}>
-                <MapComp theme={'regist'} />
+                <MapComp theme={"regist"} />
               </Suspense>
-
-
-
-
-
               <RegistBtn> 등록하기 </RegistBtn>
             </form>
             {/* <link as='image' rel='preload' href='check.png' /> */}
@@ -155,8 +159,7 @@ function Register() {
       {/* components/global */}
       <Footer topRem={6} botRem={2} />
     </FlexDiv>
-  )
+  );
 }
 
 export default Register;
-
