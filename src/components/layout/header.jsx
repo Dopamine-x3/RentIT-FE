@@ -129,8 +129,8 @@ const ModalContent = styled.div.attrs((props) => ({
   height: 540px;
   background-color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  animation: ${({ isClosing }) =>
-    isClosing
+  animation: ${({ $isClosing }) =>
+    $isClosing
       ? css`
           ${slideDown} 0.3s ease-out
         `
@@ -325,7 +325,7 @@ const Header = () => {
                 }
               }}
             >
-              <ModalContent isClosing={isClosing}>
+              <ModalContent $isClosing={isClosing}>
                 <ModalLeft>
                   <img
                     src={loginImage}
