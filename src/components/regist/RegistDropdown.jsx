@@ -1,20 +1,17 @@
-// src/components/Dropdown.js
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const DivContainer = styled.div`
-    display: flex;
-    justify-content: start;
-    border: 1px solid #CFCFCF;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    
+  display: flex;
+  justify-content: start;
+  border: 1px solid #CFCFCF;
+  border-radius: 10px;
+  margin-bottom: 10px;
 `;
 
 const DropdownContainer = styled.div`
   position: relative;
   display: inline-block;
-  
 `;
 
 const DropdownButton = styled.button`
@@ -25,13 +22,6 @@ const DropdownButton = styled.button`
   border: none;
   cursor: pointer;
 `;
-
-const CategoryText = styled.span`
-    font-size: 14px;
-    color: black;
-    cursor: poiner;
-    padding: 10px 0;
-`
 
 const DropdownContent = styled.div`
   display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
@@ -55,30 +45,31 @@ const DropdownItem = styled.a`
 
 const categories = ["가전제품", "가구", "기타"];
 
-const RegistDropdown = () => {
+const RegistDropdown = ({ setCategory }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("Category");
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (e) => {
+    e.preventDefault()
     setIsOpen(!isOpen);
   };
 
-  const handleCategorySelect = (category) => {
+  const handleCategorySelect = ( category) => {
+    
     setSelectedCategory(category);
     setIsOpen(false);
+    setCategory(category); // 선택된 카테고리를 상위 컴포넌트로 전달
   };
 
   return (
     <DivContainer>
       <DropdownContainer>
-      
-        <DropdownButton onClick={toggleDropdown}>
-        {/* <CategoryText>Category - </CategoryText>  */}
-        {selectedCategory}
+        <DropdownButton onClick={(e)=>toggleDropdown(e)}>
+          {selectedCategory}
         </DropdownButton>
         <DropdownContent isOpen={isOpen}>
           {categories.map((category, index) => (
-            <DropdownItem key={index} href="#" onClick={() => handleCategorySelect(category)}>
+            <DropdownItem key={index} href="#" onClick={() => handleCategorySelect( category)}>
               {category}
             </DropdownItem>
           ))}

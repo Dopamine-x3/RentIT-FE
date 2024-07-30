@@ -1,113 +1,100 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Div, FlexDiv, MaxWidthDiv } from '../components/globalStyle';
+import HeaderNav from '../components/layout/header';
+import useInput from '../hooks/useInput';
+import { DescInput, PriceDiv, PriceInput, PriceSpan, RegistBtn, RegistTitle, TitleInput } from '../components/regist/RegistStyled';
+import { useNavigate } from 'react-router-dom';
+import Footer from '../components/layout/footer';
+import ModalSeller from '../components/detail/ModalSeller';
+import useDropdown from '../hooks/useDropdown';
+import RegistDropdown from '../components/regist/RegistDropdown';
+import HowToRegist from '../components/regist/HowToRegist';
+import { postBoardItem } from '../apis/axios';
+import Maps from '../components/regist/Map'; // 경로 수정
+import ImageBlock from '../components/regist/ImageBlock';
 
-
-import React, { lazy, Suspense, useEffect, useState } from 'react'
-import ImageBlock from '../components/regist/ImageBlock'
-import { Div, FlexDiv, MaxWidthDiv } from '../components/globalStyle'
-import HeaderNav from '../components/layout/header'
-import useInput from '../hooks/useInput'
-// import { getCookie } from '../shared/Cookies'
-import { DescInput, PriceDiv, PriceInput, PriceSpan, RegistBtn, RegistTitle, TitleInput } from '../components/regist/RegistStyled'
-import { useNavigate } from 'react-router-dom'
-import Footer from '../components/layout/footer'
-import RegistDropdown from '../components/regist/RegistDropdown'
-
-import { useRef } from 'react'
-import ModalSeller from '../components/detail/ModalSeller'
-import useDropdown from '../hooks/useDropdown'
-import styled from 'styled-components'
-import HowToRegist from '../components/regist/HowToRegist'
-
-
-const MapComp = lazy(() => import('../components/regist/Map'))
-
-function Register() {
+function Regist() {
   const [buildingInfo, setBuildingInfo] = useState(null);
-
-  const handleInfoChange = (info) => {
-    setBuildingInfo(info);
-  };
+  const [productCondition, setProductCondition] = useState('');
+  const [deliveryMethod, setDeliveryMethod] = useState('');
+  const [deliveryPrice, setDeliveryPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [image, setImage] = useState([]);
+  const userId = '선우야되냐?';
 
   const autofocus = useRef();
   const navigate = useNavigate();
-  // const { image, location } = useSelector(state => state.Post)
-  // const accessToken = getCookie('token')
   const { handleClose, isOpen } = useDropdown(true);
   const { values, onChange } = useInput({
     title: "",
     description: "",
     price: '',
-    location: '',
-    images: '',
-    buildingInfo
-  })
+  });
 
+  const onInfoChange = (info) => {
+    console.log("Building info received from Maps:", info); // 디버깅 로그 추가
+    setBuildingInfo(info);
+  };
 
+  const convertFormDataToJson = (formData) => {
+    const jsonObject = {};
+    formData.forEach((value, key) => {
+      if (key === 'files') {
+        if (!jsonObject[key]) jsonObject[key] = [];
+        jsonObject[key].push(value.name);
+      } else {
+        jsonObject[key] = value;
+      }
+    });
+    return JSON.stringify(jsonObject, null, 2); // 예쁘게 출력하기 위해 들여쓰기 설정
+  };
 
-
-  // const { mutate, isLoading } = useMutation({
-  //   mutationKey:['mutate'],
-  //   mutationFn: async(values)=>{
-  //     console.log(values)
-  //     if(values.location === ''){
-  //       return window.alert('장소를 마커로 찍어주세요!')
-  //     }else if(values.title === ''){
-  //       return window.alert('제목을 기입해주세요!')
-  //     }else if(values.description === ''){
-  //       return window.alert('물건 상세정보를 작성해주세요!')
-  //     }else if(!values.price){
-  //       return window.alert('대여 금액을 작성해주세요!')
-  //     }else if(!values.images){
-  //       return window.alert('물품 이미지를 업로드 해주세요!')
-  //     }else{
-  //       return await axios.post(`${process.env.REACT_APP_SERVER_URL}/products`,values,{
-  //       headers:{
-  //         Authorization: `Bearer ${accessToken}`,
-  //         "Content-Type": "multipart/form-data"
-  //         }
-  //       })
-  //     }
-  //   },
-  //   onSuccess : (response) => {
-  //     window.alert(response.data.message);
-  //     navigate('/search')
-  //     window.location.reload();
-  //   },
-  //   onError : (error) => {
-  //     window.alert(error.response.data.message)
-  //   }
-  // })
-
-  const onSubmitHandler = (event) => {
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
-    // mutate({
-    //   ...values,
-    //   images:image,
-    //   location:location
-    // })
-  }
+
+    const formData = new FormData();
+    formData.append("userId", userId || '');
+    formData.append("title", values.title || '');
+    formData.append("category", category || '');
+    formData.append("price", values.price || '');
+    formData.append("description", values.description || '');
+    formData.append("product_condition", productCondition || '');
+    formData.append("delivery_method", deliveryMethod || '');
+    formData.append("delivery_price", deliveryPrice || '');
+    formData.append("address_name", buildingInfo?.address || '');
+    formData.append("building_name", buildingInfo?.content || '');
+
+    if (image.length > 0) {
+      image.forEach((file, index) => {
+        formData.append("files", file, `file${index}.jpg`);
+      });
+    }
+
+    const jsonFormData = convertFormDataToJson(formData);
+    console.log("FormData as JSON:", jsonFormData); // FormData를 JSON으로 변환하여 출력
+
+    try {
+      const response = await postBoardItem(formData); // 비동기적으로 데이터 전송
+      console.log("Server response:", response); // 디버깅 로그 추가
+      window.alert(response.message || '게시물 등록 완료');
+      navigate('/product');
+      // window.location.reload(); // navigate 후 리로딩은 불필요할 수 있음
+    } catch (error) {
+      console.error("게시물 등록 요청 실패:", error); // 디버깅 로그 추가
+      window.alert("게시물 등록 요청 실패");
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
     autofocus.current.focus();
-  }, [])
-
-  // useEffect(()=>{
-  //   if(!accessToken){
-  //     navigate('/login')
-  //   }
-  // },[accessToken])
-
-  // if(isLoading){
-  //   return <Loading/>
-  // }
+  }, []);
 
   return (
     <FlexDiv boxShadow="none">
-
-      {/* components/global */}
       <HeaderNav />
       <MaxWidthDiv>
-        <Div marginTop="5rem">
+        <Div marginTop="10rem">
           <RegistTitle>대여물품 등록</RegistTitle>
         </Div>
         <Div width="100%" marginTop="2rem" $fDirection="row" jc="space-between" gap="2rem">
@@ -116,59 +103,48 @@ function Register() {
               ref={autofocus}
               name='title'
               placeholder='제목 : 상품명이 드러나도록 제목을 적어주세요!'
-              // defaultValue={values.title}
-              // onChange={onChange}
+              value={values.title}
+              onChange={onChange}
               maxLength={20}
             />
-            <ImageBlock />
+            <ImageBlock setImage={setImage} />
           </Div>
           <div style={{ height: '685px', border: '1px solid #D7D7D7' }}></div>
           <Div width="100%">
-
-            <form onSubmit={onSubmitHandler} > {/*  */}
-              <RegistDropdown />
+            <form onSubmit={onSubmitHandler}>
+              <RegistDropdown setCategory={setCategory} />
               <PriceDiv>
                 <PriceSpan>가격</PriceSpan>
                 <PriceInput
                   min={1}
-                  type={'number'}
+                  type='number'
                   name='price'
                   placeholder='가격을 책정해주세요'
-                // defaultValue={values.price}
-                // onChange={onChange}
+                  value={values.price}
+                  onChange={onChange}
                 />
               </PriceDiv>
               <DescInput
                 name='description'
                 placeholder='해당 물품의 기종, 상태, 구매일자 등 상세하게 적어주세요!'
-              // defaultValue={values.description}
-              // onChange={onChange}
+                value={values.description}
+                onChange={onChange}
               />
-
-              <HowToRegist />
-              <Suspense fallback={<div>Loading map...</div>}>
-                <MapComp theme={'regist'} onInfoChange={handleInfoChange} />
-              </Suspense>
-              {/* {buildingInfo && (
-                <div style={{ marginTop: "20px" }}>
-                  <h3>Selected Building Info</h3>
-                  <p>Name: {buildingInfo.content}</p>
-                  <p>Address: {buildingInfo.address}</p>
-                </div>
-              )} */}
-
-              <RegistBtn> 등록하기 </RegistBtn>
+              <HowToRegist
+                setProductCondition={setProductCondition}
+                setDeliveryMethod={setDeliveryMethod}
+                setDeliveryPrice={setDeliveryPrice}
+              />
+              <Maps onInfoChange={onInfoChange} />
+              <RegistBtn type="submit">등록하기</RegistBtn>
             </form>
-            {/* <link as='image' rel='preload' href='check.png' /> */}
           </Div>
         </Div>
-        {/* {isOpen && <ModalSeller handleClose={handleClose} word1={'이미지는 "한번에" 5장까지 첨부 가능합니다!'} word2={'다시 작성 바랍니다.'} />} */}
+        {isOpen && <ModalSeller handleClose={handleClose} word1={'이미지는 "한번에" 5장까지 첨부 가능합니다!'} />}
       </MaxWidthDiv>
-      {/* components/global */}
       <Footer topRem={6} botRem={2} />
     </FlexDiv>
-  )
+  );
 }
 
-export default Register;
-
+export default Regist;
