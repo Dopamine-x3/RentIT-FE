@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // useLocation 훅을 사용하여 전달된 상태를 받음
 import Header from "../components/layout/header";
 import styled from "styled-components";
 import searchIcon from "../assets/imgs/search.svg";
@@ -6,9 +7,34 @@ import offerIcon from "../assets/imgs/offerIcon.svg";
 import requestIcon from "../assets/imgs/requestIcon.svg";
 import RequestBoardList from "../components/RequestBoardList";
 import OfferBoardList from "../components/OfferBoardList";
+import { getRentBoards } from "../apis/axios";
 
 const Search = () => {
-  const [selectedCategory, setSelectedCategory] = useState("offer");
+  const location = useLocation();
+  const initialCategory = location.state?.category || "offer";
+
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [rentBoards, setRentBoards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 데이터 가져오기
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getRentBoards();
+        setRentBoards(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
@@ -46,9 +72,9 @@ const Search = () => {
       </SearchHead>
       <SearchBody>
         {selectedCategory === "offer" ? (
-          <OfferBoardList />
+          <OfferBoardList boards={rentBoards} />
         ) : (
-          <RequestBoardList />
+          <RequestBoardList boards={rentBoards} />
         )}
       </SearchBody>
     </SearchContainer>

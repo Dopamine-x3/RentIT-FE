@@ -40,7 +40,23 @@ export const postLogin = async (userID, password) => {
     throw error;
   }
 };
+export const getRentBoards = async () => {
+  try {
+    const response = await axiosInstance.get("/rentboards");
+    return response.data;
+  } catch (error) {
+    console.error("게시판:", error);
+  }
+};
 
+export const getRentBoardItem = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/rentboards/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("게시판:", error);
+  }
+};
 export const postBoardItem = async (boardData) => {
   const {
     userId,
@@ -72,7 +88,7 @@ export const postBoardItem = async (boardData) => {
   // 파일이 있는 경우 처리
   if (files && files.length > 0) {
     files.forEach((file) => {
-      formData.append("files", file, file.name );
+      formData.append("files", file, file.name);
     });
   }
 

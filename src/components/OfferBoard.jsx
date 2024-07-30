@@ -1,18 +1,24 @@
 import React from "react";
 import styled from "styled-components";
 import { formatRelativeTime } from "../utils/dateUtils";
+import { useNavigate } from "react-router-dom";
 
 const OfferBoard = ({ offer }) => {
   const createDate = new Date(offer.createDate); // 문자열을 Date 객체로 변환
   const relativeTime = formatRelativeTime(createDate); // 상대적인 시간 포맷
+  const navigate = useNavigate();
 
+  const handleRequestClick = (id) => {
+    console.log(`${id}클릭했습니다.`);
+    navigate(`/product/${id}`);
+  };
   return (
-    <OfferItem>
+    <OfferItem onClick={() => handleRequestClick(offer.id)}>
       <OfferImg src={offer.imageUrls[0]} alt="img" />
       <OfferContents>
         <h5>{offer.title}</h5>
         <p>{offer.description}</p>
-        <p>{relativeTime}</p> {/* 상대적인 시간 표시 */}
+        <p>{relativeTime}</p>
       </OfferContents>
     </OfferItem>
   );
