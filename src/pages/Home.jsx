@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { getRentBoards } from "../apis/axios";
+
 
 // 컴포넌트
 import Header from "../components/layout/header";

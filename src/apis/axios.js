@@ -71,8 +71,8 @@ export const postBoardItem = async (boardData) => {
 
   // 파일이 있는 경우 처리
   if (files && files.length > 0) {
-    files.forEach((file) => {
-      formData.append("files", file, file.name );
+    files.forEach((file, index) => {
+      formData.append("files", file, `file${index}.jpg`);
     });
   }
 
