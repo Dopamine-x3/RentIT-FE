@@ -210,7 +210,7 @@ const DropdownMenu = styled.div`
   background-color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  display: ${({ isOpen }) => (isOpen ? "block" : "none")};
+  display: ${({ $isOpen }) => ($isOpen ? "block" : "none")};
   z-index: 20;
 `;
 
@@ -287,14 +287,14 @@ const Header = () => {
           <IconButton>
             <img src={search} alt="검색 아이콘" />
           </IconButton>
-          <WriteButton to="/write">새 글 작성</WriteButton>
+          <WriteButton to="/register">새 글 작성</WriteButton>
           <div style={{ position: "relative" }}>
             <UserIcon
               src={userIcon}
               alt="유저 아이콘"
               onClick={toggleDropdown}
             />
-            <DropdownMenu isOpen={dropdownOpen}>
+            <DropdownMenu $isOpen={dropdownOpen}>
               <DropdownItem onClick={() => navigate("/mypage")}>
                 마이페이지
               </DropdownItem>

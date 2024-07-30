@@ -40,7 +40,23 @@ export const postLogin = async (userID, password) => {
     throw error;
   }
 };
+export const getRentBoards = async () => {
+  try {
+    const response = await axiosInstance.get("/rentboards");
+    return response.data;
+  } catch (error) {
+    console.error("게시판:", error);
+  }
+};
 
+export const getRentBoardItem = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/rentboards/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("게시판:", error);
+  }
+};
 export const postBoardItem = async (boardData) => {
   const {
     userId,

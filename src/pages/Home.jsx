@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-
+import { getRentBoards } from "../apis/axios";
+import { useNavigate } from "react-router-dom";
 
 // 컴포넌트
 import Header from "../components/layout/header";
@@ -18,6 +19,8 @@ const Home = () => {
   const [rentBoards, setRentBoards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   // 데이터 가져오기
   useEffect(() => {
@@ -38,6 +41,10 @@ const Home = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+  const handleSeeMore = (category) => {
+    navigate("/search", { state: { category } });
+  };
+
   return (
     <div>
       <Header />
@@ -52,7 +59,7 @@ const Home = () => {
         <div
           style={{ display: "flex", justifyContent: "center", margin: "3% 0" }}
         >
-          <SeeMore>
+          <SeeMore onClick={() => handleSeeMore("offer")}>
             <p>더보기</p>
           </SeeMore>
         </div>
@@ -92,12 +99,11 @@ const Home = () => {
         <div
           style={{ display: "flex", justifyContent: "center", margin: "3% 0" }}
         >
-          <SeeMore>
+          <SeeMore onClick={() => handleSeeMore("request")}>
             <p>더보기</p>
           </SeeMore>
         </div>
       </Section3>
-
       <Footer />
     </div>
   );
@@ -165,6 +171,7 @@ const SeeMore = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 
   p {
     font-weight: 600;

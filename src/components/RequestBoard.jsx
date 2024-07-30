@@ -1,38 +1,33 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import { formatRelativeTime } from "../utils/dateUtils";
-
+import { useNavigate } from "react-router-dom";
 const RequestBoard = ({ request }) => {
   if (!request) return null;
 
-  const requestDate = new Date(request.date); // 문자열을 Date 객체로 변환
-  const relativeTime = formatRelativeTime(requestDate); // 상대적인 시간 포맷
+  const requestDate = new Date(request.createDate);
+  const relativeTime = formatRelativeTime(requestDate);
+
+  const navigate = useNavigate();
+
+  const handleRequestClick = (id) => {
+    console.log(`${id}클릭했습니다.`);
+    navigate(`/product/${id}`);
+  };
 
   return (
-    <RequestCard>
-      <img src={request.imageUrls[0]} alt={request.productName} />
+    <RequestCard onClick={() => handleRequestClick(request.id)}>
+      <img src={request.imageUrls[0]} alt={request.title} />
       <RequestContent>
         <div>
           <h2>{request.price}</h2>
-          <h4>{request.productName}</h4>
+          <h4>{request.title}</h4>
         </div>
         <p>{relativeTime}</p>
       </RequestContent>
     </RequestCard>
   );
 };
-
-RequestBoard.propTypes = {
-  request: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    price: PropTypes.string.isRequired,
-    productName: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
-    imageUrls: PropTypes.arrayOf(PropTypes.string).isRequired, // imageUrls로 수정
-  }).isRequired,
-};
-
 const RequestCard = styled.div`
   width: 100%;
   background: #fff;
@@ -40,6 +35,7 @@ const RequestCard = styled.div`
   justify-content: space-between;
   border: 1px solid #e0e0e0;
   transition: box-shadow 0.25s ease-in-out, transform 0.25s ease-in-out;
+  cursor: pointer; /* 클릭 가능한 카드임을 나타내기 위한 스타일 */
 
   &:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
