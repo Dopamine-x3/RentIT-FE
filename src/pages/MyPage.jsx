@@ -6,9 +6,16 @@ import HeaderNav from '../components/layout/header'
 import PagingTap from '../components/mypage/PagingTap'
 import UserCard from '../components/mypage/UserCard'
 import { FlexDiv, MaxWidthDiv } from '../components/globalStyle'
+import { useParams } from "react-router-dom";
 // import { getCookie } from '../shared/Cookies'
+import MapInfo from "../components/product/MapInfo"; // Import MapInfo component
+
+
+
 
 function MyPage() {
+  const { id } = useParams();
+  const [product, setProduct] = useState({});
   const navi = useNavigate();
   // const token = getCookie("token");
   const [currentBtn, setCurrentBtn] = useState("products");
@@ -29,7 +36,18 @@ function MyPage() {
   //     navi('/login')
   //   }
   // },[token])
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const data = await getRentBoardItem(id);
+        setProduct(data);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+    };
 
+    fetchProduct();
+  }, [id]);
   return (
     <FlexDiv boxShadow="none">
       <HeaderNav />

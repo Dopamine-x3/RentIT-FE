@@ -19,10 +19,17 @@ import DatePicker from "../components/product/DatePicker";
 const Zzim = React.lazy(() => import("../components/detail/Zzim"));
 const SellorInfo = React.lazy(() => import("../components/detail/SellorInfo"));
 import { getRentBoardItem } from "../apis/axios";
+import MapInfo from "../components/product/MapInfo"; // Import MapInfo component
+
+
+
 
 function Product() {
   const { id } = useParams();
   const [product, setProduct] = useState({});
+  const [Owner,setOwner]=useState(false);
+  const test = false;
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -40,21 +47,27 @@ function Product() {
     fetchProduct();
   }, [id]);
 
+  useEffect(() => {
+    if (product && product.id === product.userId) {
+      setOwner(true);
+    }
+  }, [product]);
+
   if (!product) return <div>로딩 중...</div>;
 
   return (
     <FlexDiv $boxShadow="none">
       <HeaderNav />
       <MaxWidthDiv>
-        <Div $marginTop="10rem">
+        <Div marginTop="10rem">
           <DetailTitle>제품 상세보기</DetailTitle>
         </Div>
         <Div
-          $width="100%"
-          $marginTop="2rem"
+          width="100%"
+          marginTop="2rem"
           $fDirection="row"
-          $jc="space-between"
-          $gap="2rem"
+          jc="space-between"
+          gap="2rem"
         >
           {/* 왼쪽 div 영역 */}
           <Div width="100%">
@@ -67,15 +80,10 @@ function Product() {
               $marginTop="2rem"
               style={{ position: "relative" }}
             >
-              <img
-                style={{ width: "567px", height: "115px" }}
-                src="/images/mapBG.webp"
-                alt=""
+             <MapInfo 
+                addressName={product.address_name} 
+                buildingName={product.building_name} 
               />
-              <LocationButton>
-                <NotifiyIcon src="/src/assets/imgs/location 2.png" />
-                거래위치 지도에서 보기
-              </LocationButton>
             </Div>
           </Div>
 
@@ -100,10 +108,10 @@ function Product() {
               >
                 <React.Suspense fallback={<div>Loading...</div>}>
                   <PriceTitle>
-                    <span style={{ fontSize: "13px" }}>/ 1일 기준</span>
-                    {product.price}
+                    <span style={{ fontSize: "13px" }}>{product.createDate}/ 1일 기준</span>
+                    <span style={{marginRight:"180px"}}> </span>{product.price}원
                   </PriceTitle>
-                  <SellorInfo />
+                  <div>{product.userId}</div>
                 </React.Suspense>
               </Div>
               <Div width="100%" $fDirection="row">
@@ -115,20 +123,33 @@ function Product() {
             </Div>
 
             <Div width="100%" gap="1rem">
-              <Div
-                $fDirection="row"
-                width="100%"
-                gap="1rem"
-                $alignItem="center"
-              >
-                <ButtonWrapper>
+            
+              
+                {Owner ?  <ButtonWrapper>
                   {/* 이건 사용자가 볼거임 */}
-                  <DatePicker />
+                  
                   {/* 등록자는 밑에 버튼이 보이고 */}
                   <DetailBtn theme={"modify"}>수정하기</DetailBtn>
                   <DetailBtn theme={"cancel"}>삭제하기</DetailBtn>
                   {/* 사용자는 채팅하기 버튼이 보일거임  */}
-                </ButtonWrapper>
+                </ButtonWrapper>:
+                
+                <ButtonWrapper>
+                  {/* 이건 사용자가 볼거임 */}
+                  <DatePicker />
+                  {/* 등록자는 밑에 버튼이 보이고 */}
+                  <DetailBtn theme={"chat"}>채팅하기</DetailBtn>
+                  
+                  {/* 사용자는 채팅하기 버튼이 보일거임  */}
+                </ButtonWrapper>}
+                
+                <Div
+                $fDirection="row"
+                width="100%"
+                gap="1rem"
+                alignItem="center"
+              >
+                
               </Div>
 
               <Div width="100%">

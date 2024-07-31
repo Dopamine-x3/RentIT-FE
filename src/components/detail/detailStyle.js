@@ -87,7 +87,12 @@ export const DetailBtn = styled.button`
                 return css`
                     background-color : #313131;
                 `
+            case 'chat' : 
+                return css`
+                    background-color : #ea5414;
+                `
             default :
+            
                 return
     }}}  
     :hover{

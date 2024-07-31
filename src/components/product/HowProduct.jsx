@@ -44,17 +44,17 @@ const HowProduct = ({ product }) => {
 
             <InfoBlock>
                 <Label>상품 상태</Label>
-                <Value>{product.status}</Value>
+                <Value>{product.product_condition}</Value>
             </InfoBlock>
             <Line />
             <InfoBlock>
                 <Label>거래 방식</Label>
-                <Value>{product.tradeMethod}</Value>
+                <Value>{product.delivery_method}</Value>
             </InfoBlock>
             <Line />
             <InfoBlock>
                 <Label>배송비</Label>
-                <Value>{product.shippingFee}</Value>
+                <Value>{product.delivery_price}</Value>
             </InfoBlock>
         </Container>
     );
