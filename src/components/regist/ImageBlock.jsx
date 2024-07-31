@@ -3,21 +3,14 @@ import { Div } from '../globalStyle';
 import { FirstPreview, OtherPreview, PreviewContainer } from './RegistStyled';
 import imageCompression from 'browser-image-compression';
 
-const ImageBlock = ({ image, setImage }) => {
+const ImageBlock = ({ setImage }) => {
   const [imageURL, setImageURL] = useState([]);
 
   useEffect(() => {
-    if (image && image.length > 0) {
-      const imageURLs = image.map(file => URL.createObjectURL(file));
-      setImageURL(imageURLs);
-    } else {
-      setImageURL([]);
-    }
-
     return () => {
       imageURL.forEach(url => URL.revokeObjectURL(url));
     };
-  }, [image]);
+  }, [imageURL]);
 
   const onImageChangeHandler = async (event) => {
     if (!event.target.files.length) return;

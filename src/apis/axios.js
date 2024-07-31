@@ -104,6 +104,7 @@ export const postBoardItem = async (boardData) => {
     console.error("게시물 등록 요청 실패:", error);
     throw error;
   }
+<<<<<<< HEAD
 };
 
 export const getSearch = async (query) => {
@@ -116,3 +117,6 @@ export const getSearch = async (query) => {
     console.error("게시판 오류:", error);
   }
 };
+=======
+};
+>>>>>>> d623b8c20e0cde7ed6aedd5c6d34e9d758ab4e59

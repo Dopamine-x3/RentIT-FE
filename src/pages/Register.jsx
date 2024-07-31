@@ -1,94 +1,87 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Div, FlexDiv, MaxWidthDiv } from '../components/globalStyle';
+import React, { useState } from 'react';
+import axios from 'axios';
 import HeaderNav from '../components/layout/header';
-import useInput from '../hooks/useInput';
-import { DescInput, PriceDiv, PriceInput, PriceSpan, RegistBtn, RegistTitle, TitleInput } from '../components/regist/RegistStyled';
-import { useNavigate } from 'react-router-dom';
 import Footer from '../components/layout/footer';
-import ModalSeller from '../components/detail/ModalSeller';
-import useDropdown from '../hooks/useDropdown';
-import RegistDropdown from '../components/regist/RegistDropdown';
-import HowToRegist from '../components/regist/HowToRegist';
-import { postBoardItem } from '../apis/axios';
-import Maps from '../components/regist/Map'; // 경로 수정
-import ImageBlock from '../components/regist/ImageBlock';
+import Maps from '../components/regist/Map';
+import { Div, FlexDiv, MaxWidthDiv } from '../components/globalStyle';
+import { DescInput, PriceDiv, PriceInput, PriceSpan, RegistBtn, RegistTitle, TitleInput } from '../components/regist/RegistStyled';
 
-function Regist() {
-  const [buildingInfo, setBuildingInfo] = useState(null);
-  const [productCondition, setProductCondition] = useState('');
-  const [deliveryMethod, setDeliveryMethod] = useState('');
-  const [deliveryPrice, setDeliveryPrice] = useState('');
-  const [category, setCategory] = useState('');
-  const [image, setImage] = useState([]);
-  const userId = '선우야되냐?';
-
-  const autofocus = useRef();
-  const navigate = useNavigate();
-  const { handleClose, isOpen } = useDropdown(true);
-  const { values, onChange } = useInput({
-    title: "",
-    description: "",
+const CreateBoard = () => {
+  const [formData, setFormData] = useState({
+    userId: '',
+    title: '',
+    category: '',
     price: '',
+    description: '',
+    product_condition: '',
+    delivery_method: '',
+    delivery_price: '',
+    address_name: '',
+    building_name: '',
+    files: []
   });
 
-  const onInfoChange = (info) => {
-    console.log("Building info received from Maps:", info); // 디버깅 로그 추가
-    setBuildingInfo(info);
+  const [imagePreviews, setImagePreviews] = useState([]);
+
+  const handleChange = (event) => {
+    const { name, value, files } = event.target;
+    if (name === 'files') {
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: files
+      }));
+      const fileArray = Array.from(files);
+      const previews = fileArray.map(file => URL.createObjectURL(file));
+      setImagePreviews(previews);
+    } else {
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    }
   };
 
-  const convertFormDataToJson = (formData) => {
-    const jsonObject = {};
-    formData.forEach((value, key) => {
-      if (key === 'files') {
-        if (!jsonObject[key]) jsonObject[key] = [];
-        jsonObject[key].push(value.name);
-      } else {
-        jsonObject[key] = value;
-      }
-    });
-    return JSON.stringify(jsonObject, null, 2); // 예쁘게 출력하기 위해 들여쓰기 설정
-  };
-
-  const onSubmitHandler = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("userId", userId || '');
-    formData.append("title", values.title || '');
-    formData.append("category", category || '');
-    formData.append("price", values.price || '');
-    formData.append("description", values.description || '');
-    formData.append("product_condition", productCondition || '');
-    formData.append("delivery_method", deliveryMethod || '');
-    formData.append("delivery_price", deliveryPrice || '');
-    formData.append("address_name", buildingInfo?.address || '');
-    formData.append("building_name", buildingInfo?.content || '');
-
-    if (image.length > 0) {
-      image.forEach((file, index) => {
-        formData.append("files", file, `file${index}.jpg`);
-      });
-    }
-
-    const jsonFormData = convertFormDataToJson(formData);
-    console.log("FormData as JSON:", jsonFormData); // FormData를 JSON으로 변환하여 출력
-
     try {
-      const response = await postBoardItem(formData); // 비동기적으로 데이터 전송
-      console.log("Server response:", response); // 디버깅 로그 추가
-      window.alert(response.message || '게시물 등록 완료');
-      navigate('/product');
-      // window.location.reload(); // navigate 후 리로딩은 불필요할 수 있음
+      const data = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (key === 'files') {
+          for (let i = 0; i < formData.files.length; i++) {
+            data.append('files', formData.files[i]);
+          }
+        } else {
+          data.append(key, formData[key]);
+        }
+      });
+
+      const response = await axios.post('http://3.36.161.37/api/rentboards', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      alert('Board created successfully!');
+      setFormData({
+        userId: '',
+        title: '',
+        category: '',
+        price: '',
+        description: '',
+        product_condition: '',
+        delivery_method: '',
+        delivery_price: '',
+        address_name: '',
+        building_name: '',
+        files: []
+      });
+      setImagePreviews([]);
     } catch (error) {
-      console.error("게시물 등록 요청 실패:", error); // 디버깅 로그 추가
-      window.alert("게시물 등록 요청 실패");
+      console.error('There was an error creating the board!', error.response?.data || error.message);
+      alert('Error creating board: ' + (error.response?.data.message || error.message));
     }
   };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    autofocus.current.focus();
-  }, []);
 
   return (
     <FlexDiv boxShadow="none">
@@ -98,53 +91,151 @@ function Regist() {
           <RegistTitle>대여물품 등록</RegistTitle>
         </Div>
         <Div width="100%" marginTop="2rem" $fDirection="row" jc="space-between" gap="2rem">
-          <Div gap="1rem">
-            <TitleInput
-              ref={autofocus}
-              name='title'
-              placeholder='제목 : 상품명이 드러나도록 제목을 적어주세요!'
-              value={values.title}
-              onChange={onChange}
-              maxLength={20}
-            />
-            <ImageBlock setImage={setImage} />
-          </Div>
-          <div style={{ height: '685px', border: '1px solid #D7D7D7' }}></div>
-          <Div width="100%">
-            <form onSubmit={onSubmitHandler}>
-              <RegistDropdown setCategory={setCategory} />
+          <form onSubmit={handleSubmit}>
+            <Div gap="1rem">
+              <label htmlFor="userId">User ID:</label>
+              <input
+                type="text"
+                id="userId"
+                name="userId"
+                value={formData.userId}
+                onChange={handleChange}
+                required
+              />
+            </Div>
+            <div className="form-group">
+              <label htmlFor="title">Title:</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div style={{ height: '685px', border: '1px solid #D7D7D7' }}></div>
+            <Div width="100%">
+              <div className="form-group">
+                <label htmlFor="category">Category:</label>
+                <input
+                  type="text"
+                  id="category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
               <PriceDiv>
                 <PriceSpan>가격</PriceSpan>
-                <PriceInput
-                  min={1}
-                  type='number'
-                  name='price'
-                  placeholder='가격을 책정해주세요'
-                  value={values.price}
-                  onChange={onChange}
+                <label htmlFor="price">Price:</label>
+                <input
+                  type="number"
+                  id="price"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                  step="0.01"
                 />
               </PriceDiv>
-              <DescInput
-                name='description'
-                placeholder='해당 물품의 기종, 상태, 구매일자 등 상세하게 적어주세요!'
-                value={values.description}
-                onChange={onChange}
-              />
-              <HowToRegist
-                setProductCondition={setProductCondition}
-                setDeliveryMethod={setDeliveryMethod}
-                setDeliveryPrice={setDeliveryPrice}
-              />
-              <Maps onInfoChange={onInfoChange} />
-              <RegistBtn type="submit">등록하기</RegistBtn>
-            </form>
-          </Div>
+              <div className="form-group">
+                <label htmlFor="description">Description:</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  required
+                ></textarea>
+              </div>
+              <div className="form-group">
+                <label htmlFor="productCondition">Product Condition:</label>
+                <input
+                  type="text"
+                  id="productCondition"
+                  name="productCondition"
+                  value={formData.productCondition}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="deliveryMethod">Delivery Method:</label>
+                <input
+                  type="text"
+                  id="deliveryMethod"
+                  name="deliveryMethod"
+                  value={formData.deliveryMethod}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="deliveryPrice">Delivery Price:</label>
+                <input
+                  type="number"
+                  id="deliveryPrice"
+                  name="deliveryPrice"
+                  value={formData.deliveryPrice}
+                  onChange={handleChange}
+                  required
+                  step="0.01"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="addressName">Address Name:</label>
+                <input
+                  type="text"
+                  id="addressName"
+                  name="addressName"
+                  value={formData.addressName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="buildingName">Building Name:</label>
+                <input
+                  type="text"
+                  id="buildingName"
+                  name="buildingName"
+                  value={formData.buildingName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="files">Files:</label>
+                <input
+                  type="file"
+                  id="files"
+                  name="files"
+                  multiple
+                  onChange={handleChange}
+                />
+              </div>
+              {imagePreviews.length > 0 && (
+                <div className="image-previews">
+                  {imagePreviews.map((preview, index) => (
+                    <img
+                      key={index}
+                      src={preview}
+                      alt={`preview ${index}`}
+                      style={{ width: '100px', height: '100px', objectFit: 'cover', margin: '5px' }}
+                    />
+                  ))}
+                </div>
+              )}
+              <button type="submit">Create Board</button>
+            </Div>
+          </form>
         </Div>
-        {isOpen && <ModalSeller handleClose={handleClose} word1={'이미지는 "한번에" 5장까지 첨부 가능합니다!'} />}
       </MaxWidthDiv>
-      <Footer topRem={6} botRem={2} />
+      <Footer />
     </FlexDiv>
   );
 }
 
-export default Regist;
+export default CreateBoard;
