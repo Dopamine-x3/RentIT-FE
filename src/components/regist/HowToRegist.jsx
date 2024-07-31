@@ -9,6 +9,7 @@ const Container = styled.div`
   border: 1px solid #CFCFCF;
   border-radius: 10px;
   margin: 5px 0;
+  width: 100%;
 `;
 
 const DropdownContainer = styled.div`

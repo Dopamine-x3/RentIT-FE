@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import HeaderNav from '../components/layout/header';
 import Footer from '../components/layout/footer';
 import Maps from '../components/regist/Map';
 import { Div, FlexDiv, MaxWidthDiv } from '../components/globalStyle';
 import { DescInput, PriceDiv, PriceInput, PriceSpan, RegistBtn, RegistTitle, TitleInput } from '../components/regist/RegistStyled';
+import useInput from '../hooks/useInput';
+import ModalSeller from '../components/detail/ModalSeller';
+import useDropdown from '../hooks/useDropdown';
+import RegistDropdown from '../components/regist/RegistDropdown';
+import HowToRegist from '../components/regist/HowToRegist';
+import ImageBlock from '../components/regist/ImageBlock';
+import { useParams } from "react-router-dom";
+import { getRentBoardItem } from "../apis/axios";
+
 
 const CreateBoard = () => {
+  const userID = localStorage.getItem("userID");
+
   const [formData, setFormData] = useState({
-    userId: '',
+    userId: userID,
     title: '',
     category: '',
     price: '',
@@ -20,9 +32,47 @@ const CreateBoard = () => {
     building_name: '',
     files: []
   });
-
+  const { id } = useParams();
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [buildingInfo, setBuildingInfo] = useState(null);
+  const [productCondition, setProductCondition] = useState('');
+  const [deliveryMethod, setDeliveryMethod] = useState('');
+  const [deliveryPrice, setDeliveryPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [product, setProduct] = useState({});
+  const { values, onChange } = useInput({
+    title: "",
+    description: "",
+    price: '',
+  });
 
+  const navigate = useNavigate();
+  const { handleClose, isOpen } = useDropdown(true);
+  const autofocus = useRef();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    autofocus.current.focus();
+  }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const data = await getRentBoardItem(id);
+        setProduct(data);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+
+  
   const handleChange = (event) => {
     const { name, value, files } = event.target;
     if (name === 'files') {
@@ -44,27 +94,36 @@ const CreateBoard = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    try {
-      const data = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (key === 'files') {
-          for (let i = 0; i < formData.files.length; i++) {
-            data.append('files', formData.files[i]);
-          }
-        } else {
-          data.append(key, formData[key]);
-        }
-      });
+    const data = new FormData();
+    data.append("userId",userID);
+    data.append("title", formData.title || '');
+    data.append("category", category || formData.category);
+    data.append("price", formData.price || '');
+    data.append("description", formData.description || '');
+    data.append("product_condition", productCondition || formData.product_condition);
+    data.append("delivery_method", deliveryMethod || formData.delivery_method);
+    data.append("delivery_price", deliveryPrice || formData.delivery_price);
+    data.append("address_name", buildingInfo?.address || formData.address_name);
+    data.append("building_name", buildingInfo?.content || formData.building_name);
 
+    if (formData.files.length > 0) {
+      formData.files.forEach((file, index) => {
+        data.append("files", file, `file${index}`);
+      });
+    }
+
+    try {
       const response = await axios.post('http://3.36.161.37/api/rentboards', data, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
-      alert('Board created successfully!');
+      // const newProductId = response.data.id; // Assuming the API returns the new product ID in response.data.id
+
+      
       setFormData({
-        userId: '',
+        userId: userID,
         title: '',
         category: '',
         price: '',
@@ -77,146 +136,67 @@ const CreateBoard = () => {
         files: []
       });
       setImagePreviews([]);
+      alert('게시물 등록이 완료되었습니다');
+      navigate(`/`); // Navigate to the new product page with the correct ID
     } catch (error) {
       console.error('There was an error creating the board!', error.response?.data || error.message);
       alert('Error creating board: ' + (error.response?.data.message || error.message));
     }
   };
 
+  const onInfoChange = (info) => {
+    console.log("Building info received from Maps:", info);
+    setBuildingInfo(info);
+  };
+
   return (
     <FlexDiv boxShadow="none">
       <HeaderNav />
       <MaxWidthDiv>
-        <Div marginTop="10rem">
-          <RegistTitle>대여물품 등록</RegistTitle>
-        </Div>
-        <Div width="100%" marginTop="2rem" $fDirection="row" jc="space-between" gap="2rem">
-          <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
+          <Div marginTop="10rem">
+            <RegistTitle>대여물품 등록</RegistTitle>
+          </Div>
+          <Div width="100%" marginTop="2rem" $fDirection="row" jc="space-between" gap="2rem">
             <Div gap="1rem">
-              <label htmlFor="userId">User ID:</label>
-              <input
-                type="text"
-                id="userId"
-                name="userId"
-                value={formData.userId}
-                onChange={handleChange}
-                required
-              />
-            </Div>
-            <div className="form-group">
-              <label htmlFor="title">Title:</label>
-              <input
-                type="text"
-                id="title"
-                name="title"
+              
+              <TitleInput
+                ref={autofocus}
+                name='title'
+                placeholder='제목 : 상품명이 드러나도록 제목을 적어주세요!'
                 value={formData.title}
                 onChange={handleChange}
-                required
+                maxLength={20}
               />
-            </div>
+              <ImageBlock setImage={(files) => handleChange({ target: { name: 'files', files } })} />
+            </Div>
             <div style={{ height: '685px', border: '1px solid #D7D7D7' }}></div>
             <Div width="100%">
-              <div className="form-group">
-                <label htmlFor="category">Category:</label>
-                <input
-                  type="text"
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              <RegistDropdown setCategory={setCategory} />
               <PriceDiv>
                 <PriceSpan>가격</PriceSpan>
-                <label htmlFor="price">Price:</label>
-                <input
-                  type="number"
-                  id="price"
-                  name="price"
+                <PriceInput
+                  min={1}
+                  type='number'
+                  name='price'
+                  placeholder='가격을 책정해주세요'
                   value={formData.price}
                   onChange={handleChange}
-                  required
-                  step="0.01"
                 />
               </PriceDiv>
-              <div className="form-group">
-                <label htmlFor="description">Description:</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                ></textarea>
-              </div>
-              <div className="form-group">
-                <label htmlFor="productCondition">Product Condition:</label>
-                <input
-                  type="text"
-                  id="productCondition"
-                  name="productCondition"
-                  value={formData.productCondition}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="deliveryMethod">Delivery Method:</label>
-                <input
-                  type="text"
-                  id="deliveryMethod"
-                  name="deliveryMethod"
-                  value={formData.deliveryMethod}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="deliveryPrice">Delivery Price:</label>
-                <input
-                  type="number"
-                  id="deliveryPrice"
-                  name="deliveryPrice"
-                  value={formData.deliveryPrice}
-                  onChange={handleChange}
-                  required
-                  step="0.01"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="addressName">Address Name:</label>
-                <input
-                  type="text"
-                  id="addressName"
-                  name="addressName"
-                  value={formData.addressName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="buildingName">Building Name:</label>
-                <input
-                  type="text"
-                  id="buildingName"
-                  name="buildingName"
-                  value={formData.buildingName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="files">Files:</label>
-                <input
-                  type="file"
-                  id="files"
-                  name="files"
-                  multiple
-                  onChange={handleChange}
-                />
-              </div>
-              {imagePreviews.length > 0 && (
+              <DescInput
+                name='description'
+                placeholder='해당 물품의 기종, 상태, 구매일자 등 상세하게 적어주세요!'
+                value={formData.description}
+                onChange={handleChange}
+              />
+              <HowToRegist
+                setProductCondition={setProductCondition}
+                setDeliveryMethod={setDeliveryMethod}
+                setDeliveryPrice={setDeliveryPrice}
+              />
+              <Maps onInfoChange={onInfoChange} />
+              {/* {imagePreviews.length > 0 && (
                 <div className="image-previews">
                   {imagePreviews.map((preview, index) => (
                     <img
@@ -227,13 +207,14 @@ const CreateBoard = () => {
                     />
                   ))}
                 </div>
-              )}
-              <button type="submit">Create Board</button>
+              )} */}
+              <RegistBtn type="submit">등록하기</RegistBtn>
             </Div>
-          </form>
-        </Div>
+          </Div>
+        </form>
+        {isOpen && <ModalSeller handleClose={handleClose} word1={'이미지는 "한번에" 5장까지 첨부 가능합니다!'} />}
       </MaxWidthDiv>
-      <Footer />
+      <Footer topRem={6} botRem={2} />
     </FlexDiv>
   );
 }

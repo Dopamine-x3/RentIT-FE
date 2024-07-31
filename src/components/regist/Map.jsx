@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { Div } from "../globalStyle";
+import styled from "styled-components";
+
 
 const Maps = ({ onInfoChange }) => {
   const { kakao } = window;
@@ -92,28 +95,60 @@ const Maps = ({ onInfoChange }) => {
           </MapMarker>
         ))}
       </Map>
+      <SearchContainer>
+        <div>
+          <input
+            type="text"
+            onChange={(e) => setSearchInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            value={searchInputValue}
+            placeholder="주소를 입력해주세요 ex) 강남역 or 서울특별시 역삼동"
+            style={{ marginRight: "10px", width: '370px' }}
 
-      <input
-        type="text"
-        onChange={(e) => setSearchInputValue(e.target.value)}
-        onKeyPress={handleKeyPress}
-        value={searchInputValue}
-        placeholder="주소를 입력해주세요 ex) 강남역 or 서울특별시 역삼동"
-        style={{ marginRight: "10px" }}
-      />
-      <button type="button" onClick={() => setKeyword(searchInputValue)}>
-        검색
-      </button>
+          />
 
-      {info && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>Building Info</h3>
-          <p>Name: {info.content}</p>
-          <p>Address: {info.address}</p>
         </div>
-      )}
+        <div>
+        <MapBtn type="button" onClick={() => setKeyword(searchInputValue)}>
+          검색
+        </MapBtn>
+        </div>
+        {info && (
+          <InfoItem>
+            <p>Name: {info.content}</p>
+            <p>Address: {info.address}</p>
+          </InfoItem>
+        )}
+      </SearchContainer>
+
     </>
   );
 };
 
 export default Maps;
+
+const MapBtn = styled.div`
+
+  border: none;
+  background-color: #0249ff;
+  transition: 0.2ms;
+  padding: 5px;
+  width: 100%;
+  color: white;
+  cursor: pointer;
+  &:hover{
+    background-color: #033bca;
+    transition: 0.2ms;
+  }
+`
+
+const SearchContainer = styled.div`
+margin-top: 10px;
+margin-bottom: 3px;
+  display: flex;
+ justify-content: space-between;
+ width: 100%;
+`
+const InfoItem = styled.div`
+  
+`
