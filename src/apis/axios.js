@@ -87,8 +87,8 @@ export const postBoardItem = async (boardData) => {
 
   // 파일이 있는 경우 처리
   if (files && files.length > 0) {
-    files.forEach((file) => {
-      formData.append("files", file, file.name);
+    files.forEach((file, index) => {
+      formData.append("files", file, `file${index}.jpg`);
     });
   }
 
@@ -103,5 +103,16 @@ export const postBoardItem = async (boardData) => {
   } catch (error) {
     console.error("게시물 등록 요청 실패:", error);
     throw error;
+  }
+};
+
+export const getSearch = async (query) => {
+  try {
+    const response = await axiosInstance.get(`/rentboards/search`, {
+      params: { query },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("게시판 오류:", error);
   }
 };

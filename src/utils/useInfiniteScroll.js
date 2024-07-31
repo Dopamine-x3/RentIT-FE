@@ -1,17 +1,5 @@
 import { useEffect, useRef } from "react";
 
-/**
- * useInfiniteScroll Hook
- *
- * @param {Object} params - Parameters for the hook
- * @param {Function} params.callback - Function to call when scrolled to the bottom
- * @param {boolean} params.hasMore - Flag to indicate if there are more items to load
- * @param {number} [params.threshold=0.5] - Intersection observer threshold
- * @param {Element|null} [params.root=null] - Intersection observer root
- * @param {string} [params.rootMargin="0px"] - Intersection observer root margin
- *
- * @returns {Object} - Ref object for the element to observe
- */
 export const useInfiniteScroll = ({
   callback,
   hasMore,
@@ -24,7 +12,6 @@ export const useInfiniteScroll = ({
 
   useEffect(() => {
     if (!hasMore) return;
-
     if (observer.current) observer.current.disconnect();
 
     const options = {

@@ -285,7 +285,9 @@ const Header = () => {
             <img src={chat1} alt="채팅 아이콘" />
           </IconButton>
           <IconButton>
-            <img src={search} alt="검색 아이콘" />
+            <Link to="/search">
+              <img src={search} alt="검색 아이콘" />
+            </Link>
           </IconButton>
           <WriteButton to="/register">새 글 작성</WriteButton>
           <div style={{ position: "relative" }}>
