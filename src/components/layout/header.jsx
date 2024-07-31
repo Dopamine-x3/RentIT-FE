@@ -232,6 +232,7 @@ const Header = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const userID = localStorage.getItem("userID");
   const modalBackground = useRef(null);
   const navigate = useNavigate();
 
@@ -271,6 +272,14 @@ const Header = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
+  const handleChatClick = () => {
+    if (!login) {
+      alert("로그인 후 이용 가능합니다.");
+    } else {
+      navigate(`/chat/${userID}/1`);
+    }
+  };
+
   return (
     <HeaderContainer>
       <Link to="/">
@@ -282,7 +291,7 @@ const Header = () => {
             <img src={bell} alt="벨 아이콘" />
           </IconButton>
           <IconButton>
-            <img src={chat1} alt="채팅 아이콘" />
+            <img src={chat1} alt="채팅 아이콘" onClick={handleChatClick} />
           </IconButton>
           <IconButton>
             <Link to="/search">
@@ -310,7 +319,7 @@ const Header = () => {
             <img src={bell} alt="벨 아이콘" />
           </IconButton>
           <IconButton>
-            <img src={chat1} alt="채팅 아이콘" />
+            <img src={chat1} alt="채팅 아이콘" onClick={handleChatClick} />
           </IconButton>
           <IconButton>
             <Link to="/search">
